@@ -5,6 +5,8 @@ else
     set t_Co=256
 endif
 " -----------------------------------------------------------------------------
+"  :nohlsearch
+"  limpa qualquer marcaçao de busca no arquivo
 filetype plugin indent on
 "  Ativa detccção automatica do tipo de arquivo,
 "  plugins e indentação filetype plugin indent on
@@ -61,58 +63,94 @@ set listchars=tab:›-,space:·,trail:◀,eol:↲
 "  tabulações e final de linha
 " -----------------------------------------------------------------------------
 set number 
+"  Habilita a exibição dos numeros das linhas no lado esquerdo da janela,
+"  permitindo que voce veja o numero de cada linha no arquivo.
 set relativenumber
+"  Quando Ativado, exibe numeros relativos em relação a linha atual.
 set scrolloff=2
+"  Defeine uma margem de rolagem.
 set cursorline
+"  Destaca a linha atual do curso esta localizado.
 " -----------------------------------------------------------------------------
 let &t_SI="\e[6 q"
+"  Define a sequencia de escape que o terminal usara para iniciar o modo de
+"  curso intermitente.
 let &t_EI="\e[2 q"
+"  Define a sequencia de escape que o terminal usara pra encerrar o modo de
+"  curso intermitente.
 " -----------------------------------------------------------------------------
 set autoindent
+"  Quando ativado, o Vim ira automaticamente identar o novo texto com base na
+"  linha anterior.
 set smartindent
+"  Esta opção inteligente de indentação faz com que o Vim ajuste
+"  automaticamnte a indentação com base na estrutura do codigo.
 " -----------------------------------------------------------------------------
 set expandtab
+"  
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
 " -----------------------------------------------------------------------------
 set ignorecase
+"  Ao ativar esta opção, as pesquisas no vim serão realizadas sem diferenciar
+"  mauisculas de minusculas, ou seja a pesquisa sera realizada se forma
+"  case-insensitive.
 set smartcase
+"  Esta configuração ajusta o comportamento da pesquisa para ser
+"  case-sensitive somente quando a espressao de pesquisa contem letras
+"  maisculas.
 set incsearch
+"  Com esta opçao ativada, o vim ira atualizar a correspondencia da pesquisa
+"  enquanto voce digita, realçando a primeira ocorrencia encontrada a medida
+"  que voce digita a expressao de pesquisa.
 set hls
+"  A breviação de hlsearch, essa configuraçao ativa o realce das
+"  correspondecias de pesquisa (search highight).
 let @/ = ""
+"  Isso redefine o registro / (usado para armazenar a ultimas busca) como uma
+"  string vazia,limpando a pesquisa anterior. 
 " -----------------------------------------------------------------------------
 set complete+=kspell
 set completeopt=menuone,longest
 set shortmess+=c
 
 set spelllang=pt_br,en
+"  Define os idiomas a serem usados para a verificação ortografica.
 set nospell
+"  
 
 " Insert completion...
 
 " -- Select with arrows up and down --
-inoremap <expr> <up> pumvisible() ? '<c-p>' : '<up>'
-inoremap <expr> <down> pumvisible() ? '<c-n>' : '<down>'
+"inoremap <expr> <up> pumvisible() ? '<c-p>' : '<up>'
+"inoremap <expr> <down> pumvisible() ? '<c-n>' : '<down>'
 
 " -- Accept with right arrow or enter --
-inoremap <expr> <right> pumvisible() ? '<c-y>' : '<right>'
-inoremap <expr> <cr> pumvisible() ? '<c-y>' : '<cr>'
+"inoremap <expr> <right> pumvisible() ? '<c-y>' : '<right>'
+"inoremap <expr> <cr> pumvisible() ? '<c-y>' : '<cr>'
 
 " -- Cancel completion with left arrow --
-inoremap <expr> <left> pumvisible() ? '<c-e>' : '<left>'
+"inoremap <expr> <left> pumvisible() ? '<c-e>' : '<left>'
 
-function! Hashbangs()
-    let hb = ['#!/bin/bash', '#!/usr/bin/env bash', '#!/bin/sh', '#!/usr/bin/awk -f']
-    call complete(col('.'), hb)
-    return ''
-endfunction
+"function! Hashbangs()
+    "let hb = ['#!/bin/bash', '#!/usr/bin/env bash', '#!/bin/sh', '#!/usr/bin/awk -f']
+    "call complete(col('.'), hb)
+    "return ''
+"endfunction
 
-imap <c-a>s <c-r>=Hashbangs()<cr>
+"imap <c-a>s <c-r>=Hashbangs()<cr>
 " -----------------------------------------------------------------------------
 set wildmenu
+"  Mostra um menu pop-up para selecionar opçoes de conclusão 
+"  de comandos ou nomes de arquivos .
 set wildmode=longest,full
+"  Determina o comportamento do preenchimento automatico,
+"  priorizando o texto mais longo em comum entre as 
+"  opções e inserindo a opçao completa.
 set wildoptions=pum
+"  Define as opções para o modo selvagem, ultilizando um 
+"  menu pop-up para exibir as opções de preenchimento automatico.
 " -----------------------------------------------------------------------------
 " https://github.com/sainnhe/edge.git 
 " set background=dark
@@ -162,21 +200,42 @@ function! LoadStatusLine()
         \}
 
     set statusline=\ %{toupper(g:currentmode[mode()])}
+    "  configura em lestras maiusculas na linha de status 
     " set statusline=\ %{toupper(mode())}
+
     set statusline+=\ %{left_sep}
+    "  Separador visual a esquerda na linha de status.
+    "
     set statusline+=\ %n
+    " Exiber o numero da linha atual do arquivo na linha de status
     set statusline+=\ %{left_sep}
+    "  Separador visual a esquerda na linha de status.
     set statusline+=\ %f%m\ %y
+    "  Nome do arquivo (%f), indicadores de modificaçao(%m), indicadores de
+    "  arquivos ocutos(%y).
     set statusline+=\ %{left_sep}
+    "  Separador visual a esquerda na linha de status.
     set statusline+=\ %{&ff}\ %{&fenc!=''?&fenc:&enc}
+    "  Exibiçao do formato de arquivos, e codificaçao do arquivo
     set statusline+=\ %{left_sep}
+    "  Separador visual a esquerda na linha de status.
     set statusline+=\ %=
+    "  Este comando posiciona os proximos elementos da linha de status a
+    "  direita, permitindo uma formatação.
     set statusline+=\ %{right_sep}
+    "  Separador visual a direita na linha de status.
     set statusline+=\ %l/%L,%v
+    "  Exiber o numero de linhas atual e o numero total de linhas no arquivos,
+    "  juntamente com a porcentagem de avanço vertical no arquivo.
     set statusline+=\ %{right_sep}
+    "  Separador visual a esquerda na linha de status.
     set statusline+=\ %P\ 
-    "Adiciona a hora atual a barra de status 
+    "  Exiber a porcentagem de avanço horizontal no aquivo, permitindo ter uma
+    "  ideia do progresso ao longo do documento.
+    set statusline+=\ %{right_sep}
+    "  Separador visual a esquerda na linha de status.
     set statusline+=\ %{strftime('%H:%M')}
+    "Adiciona a hora atual a barra de status 
 
 endfunction
 
