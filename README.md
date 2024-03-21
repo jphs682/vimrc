@@ -1,2 +1,4 @@
 # vimrc
-minhas configuraçoes do vim
+Minhas Configurações do Vim
+.vim/vimrc
+
