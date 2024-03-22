@@ -15,7 +15,7 @@ syntax on
 "  Ativa a sintaxe realçada
 set title
 "  Define o titulo da janela para o nome do arquivo 
-set encoding=utf-8
+"set encoding=utf-8
 "  Define a codifiçaão para UTF-8
 set backspace=indent,eol,start
 "  Permite retroceder a apagar tudo
@@ -87,10 +87,16 @@ set smartindent
 "  automaticamnte a indentação com base na estrutura do codigo.
 " -----------------------------------------------------------------------------
 set expandtab
-"  
+"  Essa configuração faz com que o vim insira espços em vez de tsbulaçoes
+"  quando a tecla Tab e pressionada.  
 set tabstop=4
+" Define o numero de colunas que uma tabulaçao apresenta no editor.
 set softtabstop=4
+"  Esta configuraçao define o comportamento da tecla Tab e da Backspace quando
+"  a opçao expandtab esta ativada.
 set shiftwidth=4
+"  Define quantos espaços o Vim usara ao realizar operaçoes como recuo
+"  automatico e formataçao de codigo.
 " -----------------------------------------------------------------------------
 set ignorecase
 "  Ao ativar esta opção, as pesquisas no vim serão realizadas sem diferenciar
@@ -112,12 +118,21 @@ let @/ = ""
 "  string vazia,limpando a pesquisa anterior. 
 " -----------------------------------------------------------------------------
 set complete+=kspell
+"  Esta Configuraçao adiciona o metodo de completar palavras usando o
+"  verificador ortografico do vim (kspell).
 set completeopt=menuone,longest
+"  Aqui, estamos definindo as opções para o comando de conclusão (completação) 
+"  no Vim. Com menuone, o menu de conclusão será exibido automaticamente quando 
+"  houver apenas uma opção disponível. A opção longest garante que o Vim insira
+"  a sequência de caracteres mais longa possível ao pressionar Tab para concluir 
+"  palavras.
 set shortmess+=c
-
+"  Esta configuraçao adiciona a letra "c" s lista de mesagens curtas, que
+"  geralmente siginifica que algumas mesagens informadas e de confirmação
+"  serão suprimidas ou exibidas de forma mais compacta.
 set spelllang=pt_br,en
 "  Define os idiomas a serem usados para a verificação ortografica.
-set nospell
+"set nospell
 "  
 
 " Insert completion...
@@ -159,7 +174,11 @@ set wildoptions=pum
 colorscheme habamax
 " -----------------------------------------------------------------------------
 set noshowmode
+"  Ao definir isso, voce esta desativando a exibição do modo de ediçao
+"  atual(como INSETE, VISUAL,etc.) na linha de status do Vim.
 set laststatus=2
+"  Com esta configuraçao, voce esta definindo o status da linha para sempre se
+"  exibido.
 
 hi statusline   cterm=NONE ctermfg=0 ctermbg=7   guibg=#C1C2D0 guifg=#000000
 hi statuslinenc cterm=NONE ctermfg=0 ctermbg=240 guibg=#616270 guifg=#000000
