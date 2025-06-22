@@ -19,7 +19,7 @@ chmod +x vimrc-loader.sh
 ```
 
 ### 🔧 Vimrc Corrigido (só ajustes de compatibilidade):
-
+``` bash
 " ======================================================================
 " CONFIGURAÇÕES BÁSICAS
 " ======================================================================
@@ -135,3 +135,4 @@ hi TabLine guifg=#9192a0 guibg=#303140 gui=none
 hi TabLineSel guifg=#a1a2b0 guibg=#101120 gui=bold
 hi TabLineFill guifg=#9192a0 guibg=#303140 gui=none
 hi Visual guifg=NONE guibg=#303140
+``` 
