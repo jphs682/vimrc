@@ -5,8 +5,8 @@ Ainda esta em desenvolvimeto
 
 ### 🛠️ Correção Rápida (opcional):
   - Se quiser usar source no terminal sem erros, transforme seu vimrc em um script compatível com shell:
-# Este é um WRAPPER para carregar o vimrc no Vim
 ``` bash
+# Este é um WRAPPER para carregar o vimrc no Vim
 vim -u ~/.config/vimrc/vimrc "$@"
 ```
   - Salve como vimrc-loader.sh e execute com:
