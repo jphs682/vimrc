@@ -132,4 +132,248 @@ hi TabLine guifg=#9192a0 guibg=#303140 gui=none
 hi TabLineSel guifg=#a1a2b0 guibg=#101120 gui=bold
 hi TabLineFill guifg=#9192a0 guibg=#303140 gui=none
 hi Visual guifg=NONE guibg=#303140
-``` 
+```
+```markdown
+
+# Configuração Avançada de Vim
+
+Esta é uma configuração avançada do Vim transformando-o em um IDE completo com suporte a autocompletar inteligente, linting, integração com Git e muito mais.
+
+## Recursos Principais
+
+- 🚀 Autocompletar inteligente com **CoC.nvim** (baseado em Language Server Protocol)
+
+- 🎨 Tema visual elegante com **Gruvbox** e barra de status com **Airline**
+
+- 🌳 Navegação em árvore de arquivos com **NERDTree**
+
+- 🔍 Busca rápida de arquivos com **FZF**
+
+- 🔧 Linting assíncrono com **ALE**
+
+- 💻 Integração completa com Git através de **vim-fugitive** e **vim-gitgutter**
+
+- ⚡ E muitas outras ferramentas de produtividade
+
+## Pré-requisitos
+
+- Vim (versão 8.2 ou superior) ou Neovim
+
+- Node.js (para CoC.nvim)
+
+- Python 3 (para alguns plugins)
+
+- Git
+
+## Instalação
+
+### 1. Copie o arquivo de configuração
+
+Clone este repositório ou copie o arquivo `.vimrc` para seu diretório home:
+
+```bash
+
+git clone https://github.com/seu-usuario/seu-repositorio.git ~/.vim-config
+
+ln -s ~/.vim-config/.vimrc ~/.vimrc
+
+```
+
+### 2. Instale os plugins
+
+Abra o Vim e execute:
+
+```vim
+
+:PlugInstall
+
+```
+
+### 3. Instale as dependências
+
+#### Node.js (requerido para CoC)
+
+```bash
+
+# Fedora
+
+sudo dnf install nodejs npm
+
+```
+
+#### Python
+
+```bash
+
+sudo dnf install python3 python3-pip
+
+```
+
+### 4. Instale os Language Servers (opcional mas recomendado)
+
+Instale os servidores LSP para as linguagens que você usa:
+
+```bash
+
+# JavaScript/TypeScript
+
+npm install -g typescript typescript-language-server
+
+# Python
+
+pip3 install pyright
+
+# HTML/CSS/JSON
+
+npm install -g vscode-langservers-extracted
+
+# Outras linguagens (verifique a documentação do CoC)
+
+```
+
+## Configuração Pós-Instalação
+
+### Ícones (opcional)
+
+Para ter ícones no NERDTree e na barra de status:
+
+1. Instale uma fonte powerline patched:
+
+```bash
+
+sudo dnf install powerline-fonts
+
+```
+
+2. Configure seu terminal para usar uma fonte como "DejaVu Sans Mono for Powerline"
+
+### Configurações Específicas
+
+Edite o arquivo `.vimrc` para:
+
+- Adicionar/remover plugins
+
+- Ajustar atalhos
+
+- Configurar language servers específicos
+
+## Dicas de Uso
+
+### Atalhos Essenciais
+
+| Atalho             | Descrição                           |
+
+|--------------------|-------------------------------------|
+
+| `<C-p>`            | Buscar arquivos (FZF)               |
+
+| `<C-n>`            | Alternar NERDTree                   |
+
+| `,nf`              | Encontrar arquivo atual no NERDTree |
+
+| `,b`               | Listar buffers abertos              |
+
+| `gd`               | Ir para definição                   |
+
+| `gr`               | Ver referências                     |
+
+| `,rn`              | Renomear símbolo                    |
+
+| `,f`               | Formatar código                     |
+
+| `<leader>h`        | Histórico de arquivos               |
+
+| `<F5>`             | Alternar Undotree (histórico)       |
+
+| `,tt`              | Abrir terminal                      |
+
+### Comandos Úteis
+
+| Comando            | Descrição                          |
+
+|--------------------|------------------------------------|
+
+| `:CocList`         | Listar informações do CoC          |
+
+| `:CocRestart`      | Reiniciar CoC                      |
+
+| `:Git`             | Abrir interface do Git             |
+
+| `:UndotreeToggle`  | Mostrar histórico de alterações    |
+
+| `:ALEDetail`       | Mostrar detalhes de erros (linting)|
+
+### Navegação
+
+- Use `Ctrl + hjkl` para navegar entre janelas
+
+- Use `Ctrl + l` e `Ctrl + h` para navegar entre buffers
+
+- Use `Ctrl + setas` para redimensionar janelas
+
+## Personalização
+
+Para adicionar novos plugins:
+
+1. Adicione no bloco `call plug#begin()`:
+
+```vim
+
+Plug 'autor/plugin'
+
+```
+
+2. Recarregue o vimrc (`:source ~/.vimrc`)
+
+3. Execute `:PlugInstall`
+
+Para configurar language servers adicionais, edite a lista em:
+
+```vim
+
+let g:coc_global_extensions = [ ... ]
+
+```
+
+## Solução de Problemas
+
+### Erros ao abrir o Vim
+
+- Verifique se todos os plugins foram instalados com `:PlugStatus`
+
+- Atualize os plugins com `:PlugUpdate`
+
+### Problemas com CoC
+
+- Verifique se o Node.js está instalado: `node --version`
+
+- Instale as dependências do projeto quando necessário (ex: `npm install` para projetos JS)
+
+### Ícones não aparecem
+
+- Instale uma fonte powerline e configure seu terminal
+
+## Contribuição
+
+Sinta-se à vontade para abrir issues e pull requests com melhorias!
+
+```
+
+Este README está completo com:
+
+1. Título e descrição
+
+2. Lista de recursos
+
+3. Pré-requisitos
+
+4. Passos de instalação detalhados
+
+5. Dicas de uso com tabelas de atalhos
+
+6. Seção de personalização
+
+7. Solução de problemas
+
+8. Instruções para contribuição
+
