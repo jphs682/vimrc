@@ -137,7 +137,7 @@ hi Visual guifg=NONE guibg=#303140
 
 # Configuração Avançada de Vim
 
-Esta é uma configuração avançada do Vim transformando-o em um IDE completo com suporte a autocompletar inteligente, linting, integração com Git e muito mais.
+Esta configuração transforma o Vim em um IDE completo com autocompletar inteligente, integração com Git, linting e ferramentas profissionais de desenvolvimento.
 
 ## Recursos Principais
 
