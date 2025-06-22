@@ -1,7 +1,5 @@
 # vimrc
-Minhas Configurações do Vim
-.vim/vimrc
-Ainda esta em desenvolvimeto
+Essa primeira versao e pra maquinas fracas 
 
 ### 🛠️ Correção Rápida (opcional):
   - Se quiser usar source no terminal sem erros, transforme seu vimrc em um script compatível com shell:
