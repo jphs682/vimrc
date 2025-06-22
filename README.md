@@ -133,11 +133,12 @@ hi TabLineSel guifg=#a1a2b0 guibg=#101120 gui=bold
 hi TabLineFill guifg=#9192a0 guibg=#303140 gui=none
 hi Visual guifg=NONE guibg=#303140
 ```
-```markdown
+
 
 # Configuração Avançada de Vim
 
-Esta configuração transforma o Vim em um IDE completo com autocompletar inteligente, integração com Git, linting e ferramentas profissionais de desenvolvimento.
+Esta configuração transforma o Vim em um IDE completo com autocompletar inteligente,
+integração com Git, linting e ferramentas profissionais de desenvolvimento.
 
 ## Recursos Principais
 
@@ -173,7 +174,7 @@ Clone este repositório ou copie o arquivo `.vimrc` para seu diretório home:
 
 ```bash
 
-git clone https://github.com/seu-usuario/seu-repositorio.git ~/.vim-config
+git clone https://github.com/jphs682/vimrc.git ~/.vim-config
 
 ln -s ~/.vim-config/.vimrc ~/.vimrc
 
