@@ -259,6 +259,7 @@ Edite o arquivo `.vimrc` para:
 ### Atalhos Essenciais
 
 | Atalho             | Descrição                           |
+|---|---|
 | `<C-p>`            | Buscar arquivos (FZF)               |
 | `<C-n>`            | Alternar NERDTree                   |
 | `,nf`              | Encontrar arquivo atual no NERDTree |
