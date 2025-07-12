@@ -260,7 +260,6 @@ Edite o arquivo `.vimrc` para:
 
 | Atalho             | Descrição                           |
 
-
 | `<C-p>`            | Buscar arquivos (FZF)               |
 
 | `<C-n>`            | Alternar NERDTree                   |
