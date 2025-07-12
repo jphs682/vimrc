@@ -260,7 +260,6 @@ Edite o arquivo `.vimrc` para:
 
 | Atalho             | Descrição                           |
 
-|--------------------|-------------------------------------|
 
 | `<C-p>`            | Buscar arquivos (FZF)               |
 
@@ -288,7 +287,7 @@ Edite o arquivo `.vimrc` para:
 
 | Comando            | Descrição                          |
 
-|--------------------|------------------------------------|
+
 
 | `:CocList`         | Listar informações do CoC          |
 
