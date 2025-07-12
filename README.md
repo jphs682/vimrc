@@ -259,43 +259,25 @@ Edite o arquivo `.vimrc` para:
 ### Atalhos Essenciais
 
 | Atalho             | Descrição                           |
-
 | `<C-p>`            | Buscar arquivos (FZF)               |
-
 | `<C-n>`            | Alternar NERDTree                   |
-
 | `,nf`              | Encontrar arquivo atual no NERDTree |
-
 | `,b`               | Listar buffers abertos              |
-
 | `gd`               | Ir para definição                   |
-
 | `gr`               | Ver referências                     |
-
 | `,rn`              | Renomear símbolo                    |
-
 | `,f`               | Formatar código                     |
-
 | `<leader>h`        | Histórico de arquivos               |
-
 | `<F5>`             | Alternar Undotree (histórico)       |
-
 | `,tt`              | Abrir terminal                      |
 
 ### Comandos Úteis
 
 | Comando            | Descrição                          |
-
-
-
 | `:CocList`         | Listar informações do CoC          |
-
 | `:CocRestart`      | Reiniciar CoC                      |
-
 | `:Git`             | Abrir interface do Git             |
-
 | `:UndotreeToggle`  | Mostrar histórico de alterações    |
-
 | `:ALEDetail`       | Mostrar detalhes de erros (linting)|
 
 ### Navegação
