@@ -275,6 +275,7 @@ Edite o arquivo `.vimrc` para:
 ### Comandos Úteis
 
 | Comando            | Descrição                          |
+|---|---|
 | `:CocList`         | Listar informações do CoC          |
 | `:CocRestart`      | Reiniciar CoC                      |
 | `:Git`             | Abrir interface do Git             |
