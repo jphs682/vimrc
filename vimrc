@@ -1,14 +1,24 @@
 " =============================================================================
-" .vimrc 2.0 — CONFIGURAÇÃO COMPLETA
+" .vimrc 2.0 — CONFIGURAÇÃO LEVE
 " =============================================================================
 "
-" Foco:
-"   - Desenvolvimento
-"   - Linux / Terminal
+" Vim focado em:
+"   - Linux
+"   - Terminal
+"   - Programação
 "   - Git
-"   - Python, C/C++, Go, Rust, JS/TS, HTML/CSS
-"   - Markdown
 "   - Tmux
+"   - Markdown
+"
+" Plugins:
+"   Gruvbox
+"   Airline
+"   Devicons
+"   FZF
+"   Fugitive
+"   GitGutter
+"   vim-surround
+"   vim-tmux-navigator
 "
 " =============================================================================
 
@@ -25,14 +35,14 @@ let maplocalleader = "\"
 " UTF-8
 set encoding=utf-8
 
-" Interface moderna
+" Cores modernas
 if has('termguicolors')
 set termguicolors
 endif
 
 set background=dark
 
-" Habilitar recursos de arquivo
+" Sintaxe e plugins
 filetype plugin indent on
 syntax enable
 
@@ -40,7 +50,6 @@ syntax enable
 " 2. DIRETÓRIOS DO VIM
 " =============================================================================
 
-" Criar diretórios necessários automaticamente
 if !isdirectory(expand('~/.vim/undodir'))
 call mkdir(expand('~/.vim/undodir'), 'p')
 endif
@@ -54,7 +63,7 @@ call mkdir(expand('~/.vim/backup'), 'p')
 endif
 
 " =============================================================================
-" 3. GERENCIAMENTO DE PLUGINS — VIM-PLUG
+" 3. VIM-PLUG
 " =============================================================================
 
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -72,7 +81,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " -----------------------------------------------------------------------------
-" Interface
+" Aparência
 " -----------------------------------------------------------------------------
 
 Plug 'morhetz/gruvbox'
@@ -83,7 +92,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
 
 " -----------------------------------------------------------------------------
-" Navegação
+" Busca e navegação
 " -----------------------------------------------------------------------------
 
 Plug 'junegunn/fzf', {
@@ -92,49 +101,24 @@ Plug 'junegunn/fzf', {
 
 Plug 'junegunn/fzf.vim'
 
-Plug 'preservim/nerdtree'
-
-Plug 'mhinz/vim-startify'
-
 " -----------------------------------------------------------------------------
-" Desenvolvimento
+" Git
 " -----------------------------------------------------------------------------
-
-Plug 'neoclide/coc.nvim', {
-\ 'branch': 'release'
-\ }
 
 Plug 'tpope/vim-fugitive'
-
 Plug 'airblade/vim-gitgutter'
 
 " -----------------------------------------------------------------------------
 " Edição
 " -----------------------------------------------------------------------------
 
-Plug 'preservim/nerdcommenter'
-
 Plug 'tpope/vim-surround'
 
-Plug 'jiangmiao/auto-pairs'
-
 " -----------------------------------------------------------------------------
-" Histórico
-" -----------------------------------------------------------------------------
-
-Plug 'mbbill/undotree'
-
-" -----------------------------------------------------------------------------
-" Terminal / Tmux
+" Tmux
 " -----------------------------------------------------------------------------
 
 Plug 'christoomey/vim-tmux-navigator'
-
-" -----------------------------------------------------------------------------
-" Linguagens
-" -----------------------------------------------------------------------------
-
-Plug 'sheerun/vim-polyglot'
 
 call plug#end()
 
@@ -145,13 +129,13 @@ call plug#end()
 " Performance
 set lazyredraw
 set ttyfast
-set updatetime=300
+set updatetime=500
 
 " Interface
 set title
+set ruler
 set showcmd
 set showmode
-set ruler
 
 " Arquivos
 set hidden
@@ -161,23 +145,15 @@ set confirm
 " Backspace
 set backspace=indent,eol,start
 
-" Divisão de janelas
+" Janelas
 set splitbelow
 set splitright
 
-" Não quebrar linhas automaticamente
+" Linhas
 set nowrap
-
-" Quebra visual inteligente
 set linebreak
 
-" Preencher espaços vazios
-set fillchars=vert:│,fold:-,eob:~
-
-" Caminho de busca
-set path=.,**
-
-" Sem mensagens sonoras
+" Sem sons
 set noerrorbells
 set visualbell
 
@@ -185,10 +161,10 @@ set visualbell
 set mouse=a
 
 " =============================================================================
-" 5. SWAP / BACKUP / UNDO
+" 5. ARQUIVOS / BACKUP / SWAP
 " =============================================================================
 
-" Swapfile
+" Swap
 set swapfile
 set directory^=~/.vim/swap//
 
@@ -215,14 +191,8 @@ set cursorline
 set scrolloff=5
 set sidescrolloff=5
 
-" Cursor em formato de bloco no modo normal
-if &term =~ "xterm"
-let &t_EI = "<Esc>[2 q"
-let &t_SI = "<Esc>[6 q"
-endif
-
 " =============================================================================
-" 7. INDENTAÇÃO
+" 7. INDENTAÇÃO PADRÃO
 " =============================================================================
 
 set autoindent
@@ -247,19 +217,18 @@ set incsearch
 set hlsearch
 
 " =============================================================================
-" 9. AUTOCOMPLETAR / MENU
+" 9. COMPLETAMENTO NATIVO DO VIM
 " =============================================================================
 
 set completeopt=menuone,noinsert,noselect
-
-set shortmess+=c
 
 set wildmenu
 set wildmode=longest:full,full
 
 set wildignorecase
 
-set wildignore=*.o,*~,*.pyc
+set wildignore=*.o,*~
+set wildignore+=*.pyc
 set wildignore+=*.class
 set wildignore+=*.so
 set wildignore+=*.swp
@@ -267,17 +236,12 @@ set wildignore+=node_modules/*
 set wildignore+=.git/*
 
 " =============================================================================
-" 10. LISTAS / CARACTERES INVISÍVEIS
+" 10. CARACTERES INVISÍVEIS
 " =============================================================================
 
 set nolist
 
-set listchars=
-set listchars+=tab:»\
-set listchars+=trail:·
-set listchars+=extends:»
-set listchars+=precedes:«
-set listchars+=nbsp:×
+set listchars=tab:»\ ,trail:·,extends:»,precedes:«,nbsp:×
 
 " =============================================================================
 " 11. CLIPBOARD
@@ -311,27 +275,7 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_theme = 'gruvbox'
 
 " =============================================================================
-" 15. NERDTree
-" =============================================================================
-
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeMinimalUI = 1
-
-let g:NERDTreeIgnore = [
-\ '.git$',
-\ '.swp$',
-\ '.pyc$',
-\ '**pycache**'
-\ ]
-
-" Abrir / fechar árvore
-nnoremap <silent> <leader>e :NERDTreeToggle<CR>
-
-" Encontrar arquivo atual
-nnoremap <silent> <leader>nf :NERDTreeFind<CR>
-
-" =============================================================================
-" 16. FZF
+" 15. FZF
 " =============================================================================
 
 let g:fzf_layout = {
@@ -341,75 +285,23 @@ let g:fzf_layout = {
 \ }
 \ }
 
-" Arquivos
+" Procurar arquivos
 nnoremap <silent> <leader>ff :Files<CR>
 
-" Buffers
+" Procurar buffers
 nnoremap <silent> <leader>fb :Buffers<CR>
 
-" Histórico
+" Histórico de arquivos
 nnoremap <silent> <leader>fh :History<CR>
 
-" Procurar texto
+" Procurar texto usando ripgrep
 nnoremap <silent> <leader>fg :Rg<CR>
 
-" =============================================================================
-" 17. COC — AUTOCOMPLETAR
-" =============================================================================
-
-let g:coc_global_extensions = [
-\ 'coc-json',
-\ 'coc-html',
-\ 'coc-css',
-\ 'coc-pyright',
-\ 'coc-rust-analyzer',
-\ 'coc-clangd',
-\ 'coc-go',
-\ 'coc-tsserver',
-\ 'coc-snippets',
-\ 'coc-prettier',
-\ 'coc-eslint'
-\ ]
-
-" -----------------------------------------------------------------------------
-" Navegação
-" -----------------------------------------------------------------------------
-
-nnoremap <silent> gd <Plug>(coc-definition)
-nnoremap <silent> gy <Plug>(coc-type-definition)
-nnoremap <silent> gi <Plug>(coc-implementation)
-nnoremap <silent> gr <Plug>(coc-references)
-
-" -----------------------------------------------------------------------------
-" Renomear
-" -----------------------------------------------------------------------------
-
-nnoremap <leader>rn <Plug>(coc-rename)
-
-" -----------------------------------------------------------------------------
-" Formatação
-" -----------------------------------------------------------------------------
-
-nnoremap <silent> <leader>f :call CocActionAsync('format')<CR>
-
-xnoremap <silent> <leader>f :<C-u>call CocActionAsync('formatSelected')<CR>
-
-" -----------------------------------------------------------------------------
-" Mostrar documentação
-" -----------------------------------------------------------------------------
-
-nnoremap <silent> K :call CocActionAsync('doHover')<CR>
-
-" -----------------------------------------------------------------------------
-" Diagnósticos
-" -----------------------------------------------------------------------------
-
-nnoremap <silent> <leader>dn :CocDiagnosticNext<CR>
-nnoremap <silent> <leader>dp :CocDiagnosticPrevious<CR>
-nnoremap <silent> <leader>dl :CocList diagnostics<CR>
+" Arquivo atual
+nnoremap <silent> <leader>fo :FZF<CR>
 
 " =============================================================================
-" 18. GITGUTTER
+" 16. GITGUTTER
 " =============================================================================
 
 let g:gitgutter_sign_added = '▎'
@@ -419,38 +311,93 @@ let g:gitgutter_sign_removed_first_line = '▔'
 let g:gitgutter_sign_modified_removed = '▋'
 
 " =============================================================================
-" 19. GIT — FUGITIVE
+" 17. FUGITIVE — GIT
 " =============================================================================
 
-nnoremap <leader>gs :Git<CR>
-nnoremap <leader>gc :Git commit<CR>
-nnoremap <leader>gp :Git push<CR>
-nnoremap <leader>gl :Git pull<CR>
-nnoremap <leader>gd :Gdiffsplit<CR>
-nnoremap <leader>gb :Git blame<CR>
+" Status do Git
+nnoremap <silent> <leader>gs :Git<CR>
+
+" Commit
+nnoremap <silent> <leader>gc :Git commit<CR>
+
+" Push
+nnoremap <silent> <leader>gp :Git push<CR>
+
+" Pull
+nnoremap <silent> <leader>gl :Git pull<CR>
+
+" Diff
+nnoremap <silent> <leader>gd :Gdiffsplit<CR>
+
+" Blame
+nnoremap <silent> <leader>gb :Git blame<CR>
+
+" Log
+nnoremap <silent> <leader>glog :Git log<CR>
 
 " =============================================================================
-" 20. UNDOTREE
+" 18. TMUX
 " =============================================================================
-
-nnoremap <F5> :UndotreeToggle<CR>
-
-let g:undotree_SetFocusWhenToggle = 1
-
-" =============================================================================
-" 21. NERDCOMMENTER
-" =============================================================================
-
-" Usa <leader>c para comentar/descomentar
-let g:NERDCreateDefaultMappings = 1
-
-let g:NERDSpaceDelims = 1
+"
+" Ctrl-h → esquerda
+" Ctrl-j → baixo
+" Ctrl-k → cima
+" Ctrl-l → direita
+"
+" O plugin vim-tmux-navigator cuida desses atalhos.
 
 " =============================================================================
-" 22. TERMINAL
+" 19. BUFFERS
 " =============================================================================
 
-" Terminal simples
+nnoremap <silent> <leader>bn :bnext<CR>
+
+nnoremap <silent> <leader>bp :bprevious<CR>
+
+nnoremap <silent> <leader>bd :bdelete<CR>
+
+nnoremap <silent> <leader>bl :ls<CR>
+
+" =============================================================================
+" 20. JANELAS
+" =============================================================================
+
+" Redimensionar vertical
+nnoremap <silent> <C-Up> :resize +2<CR>
+nnoremap <silent> <C-Down> :resize -2<CR>
+
+" Redimensionar horizontal
+nnoremap <silent> <C-Left> :vertical resize -2<CR>
+nnoremap <silent> <C-Right> :vertical resize +2<CR>
+
+" =============================================================================
+" 21. MOVIMENTO EM LINHAS QUEBRADAS
+" =============================================================================
+
+nnoremap j gj
+nnoremap k gk
+
+" =============================================================================
+" 22. SALVAR / SAIR
+" =============================================================================
+
+nnoremap <leader>w :write<CR>
+
+nnoremap <leader>q :quit<CR>
+
+nnoremap <leader>wq :wq<CR>
+
+" =============================================================================
+" 23. LIMPAR BUSCA
+" =============================================================================
+
+nnoremap <silent> <leader>nh :nohlsearch<CR>
+
+" =============================================================================
+" 24. TERMINAL
+" =============================================================================
+
+" Terminal
 nnoremap <silent> <leader>tt :terminal<CR>
 
 " Terminal horizontal
@@ -463,72 +410,13 @@ nnoremap <silent> <leader>ts :botright vsplit | terminal<CR>
 tnoremap <Esc> <C-><C-n>
 
 " =============================================================================
-" 23. TMUX / NAVEGAÇÃO ENTRE JANELAS
-" =============================================================================
-
-" O plugin vim-tmux-navigator utiliza:
-"
-" Ctrl-h → esquerda
-" Ctrl-j → baixo
-" Ctrl-k → cima
-" Ctrl-l → direita
-"
-" Por isso não usamos Ctrl-h/Ctrl-l para trocar buffers.
-
-" =============================================================================
-" 24. BUFFERS
-" =============================================================================
-
-nnoremap <silent> <leader>bn :bnext<CR>
-nnoremap <silent> <leader>bp :bprevious<CR>
-nnoremap <silent> <leader>bd :bdelete<CR>
-
-" Listar buffers
-nnoremap <silent> <leader>bl :ls<CR>
-
-" =============================================================================
-" 25. JANELAS
-" =============================================================================
-
-" Redimensionar horizontalmente
-nnoremap <silent> <C-Up> :resize +2<CR>
-nnoremap <silent> <C-Down> :resize -2<CR>
-
-" Redimensionar verticalmente
-nnoremap <silent> <C-Left> :vertical resize -2<CR>
-nnoremap <silent> <C-Right> :vertical resize +2<CR>
-
-" =============================================================================
-" 26. MOVIMENTO EM LINHAS QUEBRADAS
-" =============================================================================
-
-nnoremap j gj
-nnoremap k gk
-
-" =============================================================================
-" 27. SALVAR / SAIR
-" =============================================================================
-
-nnoremap <leader>w :write<CR>
-
-nnoremap <leader>q :quit<CR>
-
-nnoremap <leader>wq :wq<CR>
-
-" =============================================================================
-" 28. LIMPAR HIGHLIGHT DA BUSCA
-" =============================================================================
-
-nnoremap <silent> <leader>nh :nohlsearch<CR>
-
-" =============================================================================
-" 29. FORMATAÇÃO JSON
+" 25. FORMATAÇÃO JSON
 " =============================================================================
 
 command! FormatJSON %!python3 -m json.tool
 
 " =============================================================================
-" 30. LIMPAR ESPAÇOS NO FINAL DAS LINHAS
+" 26. LIMPAR ESPAÇOS NO FINAL DAS LINHAS
 " =============================================================================
 
 function! CleanExtraSpaces()
@@ -545,94 +433,150 @@ call setreg('/', old_query)
 endfunction
 
 " =============================================================================
-" 31. AUTOCOMMANDS
+" 27. CONFIGURAÇÕES POR LINGUAGEM
 " =============================================================================
 
-augroup user_settings
+augroup programming_settings
 autocmd!
 
 ```
-" Limpar espaços antes de salvar
-autocmd BufWritePre * call CleanExtraSpaces()
-
-" Recarregar arquivos alterados externamente
-autocmd FocusGained,BufEnter * checktime
-
+" -------------------------------------------------------------------------
 " Python
-autocmd FileType python
-    \ setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+" -------------------------------------------------------------------------
 
 autocmd FileType python
-    \ nnoremap <buffer> <leader>r :write<CR>:!python3 %<CR>
+    \ setlocal shiftwidth=4 |
+    \ setlocal tabstop=4 |
+    \ setlocal softtabstop=4 |
+    \ setlocal expandtab
 
+autocmd FileType python
+    \ setlocal textwidth=88
+
+
+" -------------------------------------------------------------------------
+" C / C++
+" -------------------------------------------------------------------------
+
+autocmd FileType c,cpp
+    \ setlocal shiftwidth=4 |
+    \ setlocal tabstop=4 |
+    \ setlocal softtabstop=4 |
+    \ setlocal expandtab
+
+autocmd FileType c,cpp
+    \ setlocal cindent
+
+
+" -------------------------------------------------------------------------
+" Go
+" -------------------------------------------------------------------------
+
+autocmd FileType go
+    \ setlocal noexpandtab |
+    \ setlocal tabstop=4 |
+    \ setlocal shiftwidth=4
+
+
+" -------------------------------------------------------------------------
+" Rust
+" -------------------------------------------------------------------------
+
+autocmd FileType rust
+    \ setlocal shiftwidth=4 |
+    \ setlocal tabstop=4 |
+    \ setlocal softtabstop=4 |
+    \ setlocal expandtab
+
+
+" -------------------------------------------------------------------------
 " JavaScript / TypeScript
+" -------------------------------------------------------------------------
+
 autocmd FileType javascript,typescript
-    \ setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+    \ setlocal shiftwidth=2 |
+    \ setlocal tabstop=2 |
+    \ setlocal softtabstop=2 |
+    \ setlocal expandtab
 
+
+" -------------------------------------------------------------------------
 " HTML / CSS
+" -------------------------------------------------------------------------
+
 autocmd FileType html,css
-    \ setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+    \ setlocal shiftwidth=2 |
+    \ setlocal tabstop=2 |
+    \ setlocal softtabstop=2 |
+    \ setlocal expandtab
 
+
+" -------------------------------------------------------------------------
 " JSON
+" -------------------------------------------------------------------------
+
 autocmd FileType json
-    \ setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+    \ setlocal shiftwidth=2 |
+    \ setlocal tabstop=2 |
+    \ setlocal softtabstop=2 |
+    \ setlocal expandtab
 
+
+" -------------------------------------------------------------------------
 " YAML
+" -------------------------------------------------------------------------
+
 autocmd FileType yaml
-    \ setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+    \ setlocal shiftwidth=2 |
+    \ setlocal tabstop=2 |
+    \ setlocal softtabstop=2 |
+    \ setlocal expandtab
 
+
+" -------------------------------------------------------------------------
 " Markdown
-autocmd FileType markdown
-    \ setlocal spell spelllang=pt_br,en
+" -------------------------------------------------------------------------
 
 autocmd FileType markdown
-    \ setlocal wrap linebreak nolist
+    \ setlocal spell |
+    \ setlocal spelllang=pt_br,en
 
+autocmd FileType markdown
+    \ setlocal wrap |
+    \ setlocal linebreak |
+    \ setlocal nolist
+
+
+" -------------------------------------------------------------------------
 " Git commit
+" -------------------------------------------------------------------------
+
 autocmd FileType gitcommit
     \ setlocal spell
+
+
+" -------------------------------------------------------------------------
+" Limpar espaços antes de salvar
+" -------------------------------------------------------------------------
+
+autocmd BufWritePre *
+    \ call CleanExtraSpaces()
+
+
+" -------------------------------------------------------------------------
+" Atualizar arquivos modificados externamente
+" -------------------------------------------------------------------------
+
+autocmd FocusGained,BufEnter *
+    \ checktime
 ```
 
 augroup END
 
 " =============================================================================
-" 32. STARTIFY
+" 28. RESTAURAR POSIÇÃO DO CURSOR
 " =============================================================================
 
-let g:startify_change_to_dir = 1
-
-let g:startify_lists = [
-\ { 'type': 'files',     'header': ['   Arquivos recentes'] },
-\ { 'type': 'dir',       'header': ['   Diretório atual'] },
-\ { 'type': 'sessions',  'header': ['   Sessões'] },
-\ { 'type': 'commands',  'header': ['   Comandos'] },
-\ ]
-
-" =============================================================================
-" 33. CONFIGURAÇÃO DO COLETA / STATUS
-" =============================================================================
-
-set statusline=%<%f\ %h%m%r
-set statusline+=%{FugitiveStatusline()}
-set statusline+=%=
-set statusline+=%-14.(%l,%c%V%)
-set statusline+=\ %P
-
-" =============================================================================
-" 34. SEGURANÇA E CONFIRMAÇÕES
-" =============================================================================
-
-" Permite editar arquivos que foram modificados externamente
-set autoread
-
-" Perguntar antes de sair com alterações
-set confirm
-
-" =============================================================================
-" 35. FINAL
-" =============================================================================
-
-" Mantém o cursor na última posição conhecida do arquivo
 augroup restore_cursor
 autocmd!
 
@@ -646,50 +590,135 @@ autocmd BufReadPost *
 augroup END
 
 " =============================================================================
-" FIM DO .vimrc 2.0
+" 29. ATALHOS DE EDIÇÃO
+" =============================================================================
+
+" Indentar bloco visual e permanecer selecionado
+vnoremap < <gv
+vnoremap > >gv
+
+" Mover linhas para cima/baixo no modo visual
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+" =============================================================================
+" 30. EXECUTAR PROGRAMAS
+" =============================================================================
+
+" Python
+augroup run_programs
+autocmd!
+
+```
+autocmd FileType python
+    \ nnoremap <buffer> <leader>r :write<CR>:!python3 %<CR>
+
+autocmd FileType c
+    \ nnoremap <buffer> <leader>r :write<CR>:!gcc % -o %:r && ./%:r<CR>
+
+autocmd FileType cpp
+    \ nnoremap <buffer> <leader>r :write<CR>:!g++ % -std=c++17 -Wall -Wextra -o %:r && ./%:r<CR>
+
+autocmd FileType go
+    \ nnoremap <buffer> <leader>r :write<CR>:!go run %<CR>
+
+autocmd FileType rust
+    \ nnoremap <buffer> <leader>r :write<CR>:!rustc % -o /tmp/vim_rust_program && /tmp/vim_rust_program<CR>
+
+autocmd FileType javascript
+    \ nnoremap <buffer> <leader>r :write<CR>:!node %<CR>
+
+autocmd FileType typescript
+    \ nnoremap <buffer> <leader>r :write<CR>:!npx ts-node %<CR>
+```
+
+augroup END
+
+" =============================================================================
+" 31. INFORMAÇÕES DO EDITOR
+" =============================================================================
+
+" Mostrar espaços e tabs quando solicitado
+command! ShowWhitespace set list!
+
+" Mostrar informações do Vim
+command! VimInfo version
+
+" =============================================================================
+" 32. FINAL
 " =============================================================================
 "
-" PRINCIPAIS ATALHOS
+" ATALHOS PRINCIPAIS
 "
-" ,e       → Abrir/fechar NERDTree
-" ,nf      → Encontrar arquivo no NERDTree
+" ─────────────────────────────────────────────────────────────────────────────
+" ARQUIVOS
 "
-" ,ff      → Procurar arquivos
-" ,fb      → Procurar buffers
-" ,fh      → Histórico
-" ,fg      → Procurar texto
+" ,ff       → procurar arquivos
+" ,fb       → procurar buffers
+" ,fh       → histórico
+" ,fg       → procurar texto
+" ,fo       → FZF
 "
-" ,bn      → Próximo buffer
-" ,bp      → Buffer anterior
-" ,bd      → Fechar buffer
+" ─────────────────────────────────────────────────────────────────────────────
+" GIT
 "
-" ,gs      → Git
-" ,gc      → Git commit
-" ,gp      → Git push
-" ,gl      → Git pull
-" ,gd      → Git diff
-" ,gb      → Git blame
+" ,gs       → Git status
+" ,gc       → Git commit
+" ,gp       → Git push
+" ,gl       → Git pull
+" ,gd       → Git diff
+" ,gb       → Git blame
+" ,glog     → Git log
 "
-" ,rn      → Renomear símbolo (CoC)
-" ,f       → Formatar código
-" ,dn      → Próximo diagnóstico
-" ,dp      → Diagnóstico anterior
-" ,dl      → Lista de diagnósticos
+" ─────────────────────────────────────────────────────────────────────────────
+" BUFFERS
 "
-" F5       → Undotree
+" ,bn       → próximo buffer
+" ,bp       → buffer anterior
+" ,bd       → fechar buffer
+" ,bl       → listar buffers
 "
-" ,tt      → Terminal
-" ,tv      → Terminal horizontal
-" ,ts      → Terminal vertical
+" ─────────────────────────────────────────────────────────────────────────────
+" TERMINAL
 "
-" ,w       → Salvar
-" ,q       → Sair
-" ,wq      → Salvar e sair
-" ,nh      → Limpar busca
+" ,tt       → terminal
+" ,tv       → terminal horizontal
+" ,ts       → terminal vertical
 "
-" Ctrl-h   → Janela esquerda (tmux/vim)
-" Ctrl-j   → Janela abaixo
-" Ctrl-k   → Janela acima
-" Ctrl-l   → Janela direita
+" ─────────────────────────────────────────────────────────────────────────────
+" EXECUTAR CÓDIGO
 "
+" ,r        → executar arquivo atual
+"
+" Python    → python3
+" C        → gcc
+" C++      → g++
+" Go       → go run
+" Rust     → rustc
+" JS       → node
+" TS       → ts-node
+"
+" ─────────────────────────────────────────────────────────────────────────────
+" EDITOR
+"
+" ,w        → salvar
+" ,q        → sair
+" ,wq       → salvar e sair
+" ,nh       → limpar busca
+"
+" FZF       → busca de arquivos
+" Fugitive  → Git
+" GitGutter → alterações no Git
+" Surround  → edição de delimitadores
+"
+" ─────────────────────────────────────────────────────────────────────────────
+" TMUX
+"
+" Ctrl-h    → esquerda
+" Ctrl-j    → baixo
+" Ctrl-k    → cima
+" Ctrl-l    → direita
+"
+" =============================================================================
+" FIM
 " =============================================================================
