@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Instalar Vim e ferramentas de compilação
         run: |
@@ -36,8 +38,13 @@ jobs:
       - name: Validar sintaxe do shell
         run: sh -n tests/run.sh
 
-      - name: Verificar whitespace do commit
-        run: git diff --check HEAD^1 HEAD
+      - name: Verificar whitespace das alterações
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git diff --check "origin/$GITHUB_BASE_REF...HEAD"
+          else
+            git diff --check "HEAD^ HEAD"
+          fi
 
       - name: Executar testes automatizados
         run: sh tests/run.sh
