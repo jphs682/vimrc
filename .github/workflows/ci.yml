@@ -37,7 +37,7 @@ jobs:
         run: sh -n tests/run.sh
 
       - name: Verificar whitespace do commit
-        run: git show --check --oneline HEAD
+        run: git diff --check HEAD^1 HEAD
 
       - name: Executar testes automatizados
         run: sh tests/run.sh
