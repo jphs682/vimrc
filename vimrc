@@ -254,7 +254,7 @@ command! ShowWhitespace setlocal list!
 command! HideWhitespace setlocal nolist
 command! ToggleRelativeNumber setlocal relativenumber!
 
----
+" -----------------------------------------------------------------------------
 " 14. BUFFERS
 " -----------------------------------------------------------------------------
 
