@@ -1,4 +1,4 @@
-# Vimrc 1.1.1 — Vim nativo, sem plugins
+# Vimrc 1.2.0 — Vim nativo, sem plugins
 
 Configuração para o **Vim tradicional**, com prioridade para Linux, usando somente recursos nativos do Vim e Vimscript.
 
@@ -14,7 +14,9 @@ O objetivo é oferecer uma configuração organizada para edição e programaç�
 - Configurações específicas para Python, C, C++, Go, Rust, JavaScript, TypeScript, HTML, CSS, JSON, YAML e Markdown.
 - Navegação por buffers e janelas.
 - Terminal integrado nativo, quando disponível na compilação do Vim.
-- Execução de scripts e compilação de programas pelo atalho ,r.
+- Execução e compilação separadas por comandos nativos; o atalho ,r compila e executa quando necessário.
+- Artefatos compilados isolados em diretórios temporários por buffer, com limpeza ao executar, fechar o buffer ou sair normalmente do Vim.
+- Compilação Java de arquivos .java do mesmo diretório, permitindo classes auxiliares.
 - Atalhos Git nativos, com verificação de repositório.
 - Formatação de JSON com Python 3.
 
@@ -122,7 +124,9 @@ A tecla líder (Leader) é a vírgula. Por isso, Leader+w significa pressionar v
 | ,tv | Abrir terminal em divisão horizontal |
 | ,ts | Abrir terminal em divisão vertical |
 | Esc no modo Terminal | Voltar ao modo Normal |
-| ,r | Executar o arquivo atual, conforme o tipo |
+| ,c | Compilar o arquivo atual (quando aplicável) |
+| ,R | Executar o arquivo atual já compilado ou interpretado |
+| ,r | Compilar e executar; para linguagens interpretadas, apenas executar |
 
 ### Git
 
@@ -146,9 +150,19 @@ Os atalhos Git funcionam dentro de um repositório, inclusive em seus subdiretó
 
 A formatação valida o JSON antes de alterar o buffer. Se o JSON for inválido, o Python 3 não estiver disponível ou o formatador falhar, a configuração informa o erro e preserva o conteúdo original.
 
-## Execução de linguagens
+## Compilação e execução
 
-Salve o arquivo e pressione ,r.
+Salve o arquivo. Os comandos disponíveis são:
+
+| Comando | Ação |
+|---|---|
+| :CompileCurrentFile ou ,c | Compilar C, C++, Rust, Go ou Java |
+| :RunCurrentFile ou ,R | Executar script interpretado ou binário já compilado |
+| :BuildAndRunCurrentFile ou ,r | Compilar e executar; executa diretamente Python, JavaScript e TypeScript |
+
+Para linguagens compiladas, também é possível compilar com ,c e executar depois com ,R. Os binários e classes ficam em diretórios temporários próprios do buffer. A configuração tenta removê-los após a execução, ao fechar o buffer ou ao sair normalmente do Vim. Uma interrupção forçada do processo pode deixar resíduos temporários.
+
+Salve o arquivo e pressione ,r para o fluxo habitual de compilar e executar.
 
 | Tipo de arquivo | Comando utilizado |
 |---|---|
@@ -159,19 +173,20 @@ Salve o arquivo e pressione ,r.
 | C | gcc com avisos -Wall -Wextra |
 | C++ | g++ -std=c++17 com avisos |
 | Rust | rustc |
-| Java | javac e depois java |
+| Java | javac e depois java; compila arquivos .java do diretório atual do fonte |
 
 ### Observações sobre Java
 
 - O JDK precisa disponibilizar os comandos javac e java no PATH.
 - Para a execução simples, o nome do arquivo deve corresponder ao nome da classe principal. Exemplo: Aluno.java com a classe Aluno.
-- A função reconhece uma declaração simples de pacote (package) e usa o nome qualificado da classe ao executar.
+- A configuração identifica uma declaração package e usa o nome qualificado da classe principal ao executar.
+- Os arquivos .java encontrados no mesmo diretório do fonte atual são compilados juntos, permitindo classes auxiliares locais.
 - O código precisa conter um método de entrada válido, normalmente public static void main(String[] args).
 - Projetos Java com várias classes, dependências externas ou configuração de build (Maven/Gradle) devem ser executados pelas ferramentas próprias do projeto.
 
 ### Arquivos compilados
 
-Os executáveis de C, C++ e Rust e os arquivos compilados de Java são criados em diretórios temporários. A configuração tenta remover esses diretórios após a execução, evitando deixar binários de compilação junto aos arquivos-fonte.
+Os executáveis de C, C++, Rust e Go e as classes Java são criados em diretórios temporários separados por buffer. A configuração remove esses diretórios depois da execução, ao fechar o buffer ou ao sair normalmente do Vim. Se o processo do Vim for encerrado à força (por exemplo, com kill -9 ou queda de energia), o sistema pode manter resíduos temporários.
 
 ## Personalização
 
