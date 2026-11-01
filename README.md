@@ -1,358 +1,230 @@
-# vimrc
-### 🛠️ Correção Rápida (opcional):
-  - Se quiser usar source no terminal sem erros, transforme seu vimrc em um script compatível com shell:
-``` bash
-# Este é um WRAPPER para carregar o vimrc no Vim
-vim -u ~/.config/vimrc/vimrc "$@"
-```
-  - Salve como vimrc-loader.sh e execute com:
-``` bash
-chmod +x vimrc-loader.sh
-./vimrc-loader.sh
-```
+# Vimrc 1.1 — Vim nativo, sem plugins
 
-### 🔧 Vimrc Corrigido (só ajustes de compatibilidade):
-``` bash
-" ======================================================================
-" CONFIGURAÇÕES BÁSICAS
-" ======================================================================
+Configuração para o **Vim tradicional**, com prioridade para Linux, usando somente recursos nativos do Vim e Vimscript.
 
-" Verifica suporte a cores verdadeiras
-if has('termguicolors')
-    set termguicolors
-else
-    set t_Co=256
-endif
+O objetivo é oferecer uma configuração organizada para edição e programação, sem gerenciadores de plugins, extensões de terceiros ou dependência de IDE.
 
-" Ativa recursos essenciais
-filetype plugin indent on
-syntax on
-set title
-set backspace=indent,eol,start
-set noerrorbells
-set confirm
-set hidden
-set splitbelow
-set splitright
-set fillchars=vert:│,fold:-,eob:~,lastline:@
-set path=.,**
-set noswapfile
-set nobackup
-set undodir=~/.vim/undodir
-set undofile
+## Características
 
-" Formatação de texto
-set nowrap
-set linebreak
-set nolist
-set listchars=tab:›-,space:·,trail:◀,eol:↲
+- Nenhum plugin ou gerenciador de plugins.
+- Interface com números de linha, linha do cursor, barra de status e divisão de janelas.
+- Backup, arquivos swap e undo persistente.
+- Busca incremental e diferenciação entre maiúsculas e minúsculas.
+- Indentação padrão de quatro espaços, com ajustes por tipo de arquivo.
+- Configurações específicas para Python, C, C++, Go, Rust, JavaScript, TypeScript, HTML, CSS, JSON, YAML e Markdown.
+- Navegação por buffers e janelas.
+- Terminal integrado nativo, quando disponível na compilação do Vim.
+- Execução de scripts e compilação de programas pelo atalho ,r.
+- Atalhos Git nativos, com verificação de repositório.
+- Formatação de JSON com Python 3.
 
-" Números e cursor
-set number
-set relativenumber
-set scrolloff=2
-set cursorline
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
+## Requisitos
 
-" Indentação
-set autoindent
-set smartindent
-set expandtab
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+### Obrigatório
 
-" Busca
-set ignorecase
-set smartcase
-set incsearch
-set hls
-let @/ = ""
+- Vim instalado.
+- Sistema Linux recomendado.
 
-" Autocompletar
-set complete+=kspell
-set completeopt=menuone,longest
-set shortmess+=c
-set spelllang=pt_br,en
+### Dependências opcionais por funcionalidade
 
-" Interface
-set wildmenu
-set wildmode=longest,full
-set wildoptions=pum
-colorscheme industry
-set noshowmode
-set laststatus=2
+O Vim não instala compiladores ou intérpretes. Instale apenas as ferramentas das linguagens que pretende executar:
 
-" ======================================================================
-" BARRA DE STATUS PERSONALIZADA
-" ======================================================================
-function! LoadStatusLine()
-    let g:left_sep = '|'
-    let g:right_sep = '|'
+| Ferramenta | Utilização |
+|---|---|
+| python3 | Executar Python e formatar JSON |
+| node | Executar JavaScript |
+| ts-node | Executar TypeScript |
+| go | Executar programas Go |
+| gcc | Compilar e executar C |
+| g++ | Compilar e executar C++17 |
+| rustc | Compilar e executar Rust |
+| JDK (javac e java) | Compilar e executar Java |
+| git | Atalhos de status, log e diff |
 
-    let g:currentmode = {
-        \ 'n': 'Normal',
-        \ 'v': 'Visual',
-        \ 'i': 'Insert',
-        \ 'R': 'Replace',
-        \ 'c': 'Command',
-        \ 't': 'Terminal'
-        \}
+Alguns recursos dependem também da compilação do Vim e do ambiente:
 
-    set statusline=\ %{toupper(g:currentmode[mode()])}
-    set statusline+=\ %{left_sep}
-    set statusline+=\ %n
-    set statusline+=\ %{left_sep}
-    set statusline+=\ %f%m\ %y
-    set statusline+=\ %{left_sep}
-    set statusline+=\ %{&ff}\ %{&fenc!=''?&fenc:&enc}
-    set statusline+=\ %{left_sep}
-    set statusline+=\ %=
-    set statusline+=\ %{right_sep}
-    set statusline+=\ %l/%L,%v
-    set statusline+=\ %{right_sep}
-    set statusline+=\ %P\ 
-    set statusline+=\ %{right_sep}
-    set statusline+=\ %{strftime('%H:%M')}
-endfunction
-
-call LoadStatusLine()
-
-" Destaques visuais
-hi Normal guibg=NONE ctermbg=NONE
-hi CursorLine guibg=#202130
-hi Comment cterm=italic gui=italic
-hi VertSplit ctermbg=NONE guibg=NONE ctermfg=7 guifg=#c1c2d0
-hi TabLine guifg=#9192a0 guibg=#303140 gui=none
-hi TabLineSel guifg=#a1a2b0 guibg=#101120 gui=bold
-hi TabLineFill guifg=#9192a0 guibg=#303140 gui=none
-hi Visual guifg=NONE guibg=#303140
-```
-
-
-# Configuração Avançada de Vim
-
-Esta configuração transforma o Vim em um IDE completo com autocompletar inteligente,
-integração com Git, linting e ferramentas profissionais de desenvolvimento.
-
-## Recursos Principais
-
-- 🚀 Autocompletar inteligente com **CoC.nvim** (baseado em Language Server Protocol)
-
-- 🎨 Tema visual elegante com **Gruvbox** e barra de status com **Airline**
-
-- 🌳 Navegação em árvore de arquivos com **NERDTree**
-
-- 🔍 Busca rápida de arquivos com **FZF**
-
-- 🔧 Linting assíncrono com **ALE**
-
-- 💻 Integração completa com Git através de **vim-fugitive** e **vim-gitgutter**
-
-- ⚡ E muitas outras ferramentas de produtividade
-
-## Pré-requisitos
-
-- Vim (versão 8.2 ou superior) ou Neovim
-
-- Node.js (para CoC.nvim)
-
-- Python 3 (para alguns plugins)
-
-- Git
+- **Terminal integrado:** requer Vim compilado com suporte a terminal (+terminal).
+- **Área de transferência:** requer suporte a clipboard no Vim e um provedor disponível no Linux, como xclip ou xsel.
+- **Verificação ortográfica:** o Markdown usa português e inglês; os arquivos de dicionário correspondentes precisam estar instalados no Vim.
 
 ## Instalação
 
-### 1. Copie o arquivo de configuração
+Faça uma cópia da configuração atual antes de substituí-la:
 
-Clone este repositório ou copie o arquivo `.vimrc` para seu diretório home:
+~~~bash
+[ -f ~/.vimrc ] && cp ~/.vimrc ~/.vimrc.backup
+~~~
 
-```bash
+Clone o repositório e instale o arquivo:
 
+~~~bash
 git clone https://github.com/jphs682/vimrc.git ~/.vim-config
+cp ~/.vim-config/vimrc ~/.vimrc
+~~~
 
-ln -s ~/.vim-config/.vimrc ~/.vimrc
+Carregue a configuração sem fechar o Vim:
 
-```
+~~~vim
+:source ~/.vimrc
+~~~
 
-### 2. Instale os plugins
+Para conferir a versão e os recursos disponíveis na sua instalação:
 
-Abra o Vim e execute:
+~~~bash
+vim --version
+~~~
 
-```vim
+> Se preferir manter o arquivo em outro local, use vim -u /caminho/para/vimrc. O arquivo do repositório é chamado vimrc, sem ponto inicial.
 
-:PlugInstall
+## Atalhos
 
-```
+A tecla líder (Leader) é a vírgula. Por isso, Leader+w significa pressionar vírgula e depois w.
 
-### 3. Instale as dependências
+### Arquivos e buffers
 
-#### Node.js (requerido para CoC)
-
-```bash
-
-# Fedora
-
-sudo dnf install nodejs npm
-
-```
-
-#### Python
-
-```bash
-
-sudo dnf install python3 python3-pip
-
-```
-
-### 4. Instale os Language Servers (opcional mas recomendado)
-
-Instale os servidores LSP para as linguagens que você usa:
-
-```bash
-
-# JavaScript/TypeScript
-
-npm install -g typescript typescript-language-server
-
-# Python
-
-pip3 install pyright
-
-# HTML/CSS/JSON
-
-npm install -g vscode-langservers-extracted
-
-# Outras linguagens (verifique a documentação do CoC)
-
-```
-
-## Configuração Pós-Instalação
-
-### Ícones (opcional)
-
-Para ter ícones no NERDTree e na barra de status:
-
-1. Instale uma fonte powerline patched:
-
-```bash
-
-sudo dnf install powerline-fonts
-
-```
-
-2. Configure seu terminal para usar uma fonte como "DejaVu Sans Mono for Powerline"
-
-### Configurações Específicas
-
-Edite o arquivo `.vimrc` para:
-
-- Adicionar/remover plugins
-
-- Ajustar atalhos
-
-- Configurar language servers específicos
-
-## Dicas de Uso
-
-### Atalhos Essenciais
-
-| Atalho             | Descrição                           |
+| Atalho | Ação |
 |---|---|
-| `<C-p>`            | Buscar arquivos (FZF)               |
-| `<C-n>`            | Alternar NERDTree                   |
-| `,nf`              | Encontrar arquivo atual no NERDTree |
-| `,b`               | Listar buffers abertos              |
-| `gd`               | Ir para definição                   |
-| `gr`               | Ver referências                     |
-| `,rn`              | Renomear símbolo                    |
-| `,f`               | Formatar código                     |
-| `<leader>h`        | Histórico de arquivos               |
-| `<F5>`             | Alternar Undotree (histórico)       |
-| `,tt`              | Abrir terminal                      |
+| ,w | Salvar arquivo |
+| ,q | Sair |
+| ,wq | Salvar e sair |
+| ,e | Iniciar comando para abrir arquivo |
+| ,o | Abrir lista de arquivos recentes |
+| ,bn | Próximo buffer |
+| ,bp | Buffer anterior |
+| ,bd | Fechar buffer |
+| ,bl | Listar buffers |
+| ,ls | Listar buffers |
 
-### Comandos Úteis
+### Janelas
 
-| Comando            | Descrição                          |
+| Atalho | Ação |
 |---|---|
-| `:CocList`         | Listar informações do CoC          |
-| `:CocRestart`      | Reiniciar CoC                      |
-| `:Git`             | Abrir interface do Git             |
-| `:UndotreeToggle`  | Mostrar histórico de alterações    |
-| `:ALEDetail`       | Mostrar detalhes de erros (linting)|
+| ,h | Mover para janela à esquerda |
+| ,j | Mover para janela abaixo |
+| ,k | Mover para janela acima |
+| ,l | Mover para janela à direita |
+| Ctrl + setas | Redimensionar janela |
 
-### Navegação
+### Edição e busca
 
-- Use `Ctrl + hjkl` para navegar entre janelas
+| Atalho | Ação |
+|---|---|
+| ,nh | Limpar destaque da busca |
+| j / k | Navegar por linhas visuais quando há quebra de linha |
+| > / < no modo Visual | Indentar seleção mantendo-a selecionada |
+| J / K no modo Visual | Mover linhas selecionadas para baixo/cima |
 
-- Use `Ctrl + l` e `Ctrl + h` para navegar entre buffers
+### Terminal e execução
 
-- Use `Ctrl + setas` para redimensionar janelas
+| Atalho | Ação |
+|---|---|
+| ,tt | Abrir terminal |
+| ,tv | Abrir terminal em divisão horizontal |
+| ,ts | Abrir terminal em divisão vertical |
+| Esc no modo Terminal | Voltar ao modo Normal |
+| ,r | Executar o arquivo atual, conforme o tipo |
+
+### Git
+
+| Atalho | Ação |
+|---|---|
+| ,gs | Executar git status |
+| ,gl | Mostrar os últimos 10 commits |
+| ,gd | Mostrar git diff |
+
+Os atalhos Git funcionam dentro de um repositório, inclusive em seus subdiretórios. O Git precisa estar instalado.
+
+## Comandos disponíveis
+
+| Comando | Ação |
+|---|---|
+| :FormatJSON | Formatar o JSON do buffer usando Python 3 |
+| :ShowWhitespace | Alternar visualização de espaços e caracteres especiais |
+| :HideWhitespace | Ocultar caracteres especiais |
+| :ToggleRelativeNumber | Alternar números relativos |
+| :VimInfo | Exibir informações da versão do Vim |
+
+Se o JSON for inválido, a formatação informa o erro e preserva o conteúdo original.
+
+## Execução de linguagens
+
+Salve o arquivo e pressione ,r.
+
+| Tipo de arquivo | Comando utilizado |
+|---|---|
+| Python | python3 arquivo.py |
+| JavaScript | node arquivo.js |
+| TypeScript | ts-node arquivo.ts |
+| Go | go run arquivo.go |
+| C | gcc com avisos -Wall -Wextra |
+| C++ | g++ -std=c++17 com avisos |
+| Rust | rustc |
+| Java | javac e depois java |
+
+### Observações sobre Java
+
+- O JDK precisa disponibilizar os comandos javac e java no PATH.
+- Para a execução simples, o nome do arquivo deve corresponder ao nome da classe principal. Exemplo: Aluno.java com a classe Aluno.
+- A função reconhece uma declaração simples de pacote (package) e usa o nome qualificado da classe ao executar.
+- O código precisa conter um método de entrada válido, normalmente public static void main(String[] args).
+- Projetos Java com várias classes, dependências externas ou configuração de build (Maven/Gradle) devem ser executados pelas ferramentas próprias do projeto.
+
+### Arquivos compilados
+
+Os executáveis de C, C++ e Rust e os arquivos compilados de Java são criados em diretórios temporários. A configuração tenta remover esses diretórios após a execução, evitando deixar binários de compilação junto aos arquivos-fonte.
 
 ## Personalização
 
-Para adicionar novos plugins:
+Edite ~/.vimrc para ajustar opções, atalhos e regras de indentação. As configurações específicas por linguagem ficam na seção CONFIGURAÇÕES POR TIPO DE ARQUIVO.
 
-1. Adicione no bloco `call plug#begin()`:
+O arquivo usa recursos nativos do Vim. Não é necessário instalar plugin manager, executar :PlugInstall ou configurar servidores LSP.
 
-```vim
+## Solução de problemas
 
-Plug 'autor/plugin'
+### A configuração apresenta erro ao carregar
 
-```
+Abra o Vim e execute:
 
-2. Recarregue o vimrc (`:source ~/.vimrc`)
+~~~vim
+:source ~/.vimrc
+:messages
+~~~
 
-3. Execute `:PlugInstall`
+Confira também a versão e os recursos compilados:
 
-Para configurar language servers adicionais, edite a lista em:
+~~~bash
+vim --version
+~~~
 
-```vim
+### O atalho ,r informa que uma ferramenta não foi encontrada
 
-let g:coc_global_extensions = [ ... ]
+Instale a ferramenta correspondente e confirme que ela está no PATH:
 
-```
+~~~bash
+command -v python3
+command -v javac
+command -v java
+command -v gcc
+command -v g++
+command -v git
+~~~
 
-## Solução de Problemas
+Os comandos são exemplos; verifique apenas os executáveis necessários à linguagem utilizada.
 
-### Erros ao abrir o Vim
+### O terminal integrado não abre
 
-- Verifique se todos os plugins foram instalados com `:PlugStatus`
+Verifique se vim --version mostra +terminal. Algumas distribuições fornecem uma compilação do Vim sem esse recurso.
 
-- Atualize os plugins com `:PlugUpdate`
+### Copiar e colar não funciona com a área de transferência do sistema
 
-### Problemas com CoC
+Verifique se vim --version mostra suporte a clipboard e se existe um provedor instalado no ambiente gráfico/terminal Linux.
 
-- Verifique se o Node.js está instalado: `node --version`
+### A verificação ortográfica não encontra palavras em português
 
-- Instale as dependências do projeto quando necessário (ex: `npm install` para projetos JS)
+Instale os arquivos de dicionário do Vim para português e inglês. A configuração ativa spell em arquivos Markdown e de mensagem de commit.
 
-### Ícones não aparecem
+## Filosofia do projeto
 
-- Instale uma fonte powerline e configure seu terminal
+Este repositório prioriza simplicidade, transparência e manutenção. A configuração não tenta transformar o Vim em uma IDE dependente de extensões: utiliza os recursos que já fazem parte do editor e deixa compiladores, intérpretes e Git como ferramentas externas do sistema.
 
-## Contribuição
-
-Sinta-se à vontade para abrir issues e pull requests com melhorias!
-
-```
-
-Este README está completo com:
-
-1. Título e descrição
-
-2. Lista de recursos
-
-3. Pré-requisitos
-
-4. Passos de instalação detalhados
-
-5. Dicas de uso com tabelas de atalhos
-
-6. Seção de personalização
-
-7. Solução de problemas
-
-8. Instruções para contribuição
-```
+Contribuições e sugestões são bem-vindas por meio de issues e pull requests.
