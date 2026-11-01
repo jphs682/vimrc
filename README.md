@@ -225,7 +225,7 @@ O repositório inclui testes de configuração, recursos, formatação JSON e in
 sh tests/run.sh
 ~~~
 
-O teste requer Vim instalado. Python 3, Node.js, GCC, G++, Rust, Go e JDK são verificados individualmente; linguagens sem a ferramenta correspondente são marcadas como ignoradas. O GitHub Actions executa a suíte em Ubuntu 22.04 e 24.04 com as ferramentas instaladas.
+O teste requer Vim instalado. Python 3, Node.js, ts-node, GCC, G++, Rust, Go e JDK são verificados individualmente; linguagens sem a ferramenta correspondente são marcadas como ignoradas. O GitHub Actions executa a suíte em Ubuntu 22.04 e 24.04 com as ferramentas instaladas.
 
 ## Solução de problemas
 
