@@ -1,4 +1,4 @@
-# Vimrc 1.3.0 — Vim nativo, sem plugins
+# Vimrc 1.4.0 — Vim nativo, sem plugins
 
 Configuração para o **Vim tradicional**, com prioridade para Linux, usando somente recursos nativos do Vim e Vimscript.
 
@@ -217,15 +217,15 @@ Edite ~/.vimrc para ajustar opções, atalhos e regras de indentação. As confi
 
 O arquivo usa recursos nativos do Vim. Não é necessário instalar plugin manager, executar :PlugInstall ou configurar servidores LSP.
 
-## Testes básicos
+## Testes automatizados
 
-O repositório inclui um teste de carregamento e verificações de comandos e recursos principais. Execute na raiz do clone:
+O repositório inclui testes de configuração, recursos, formatação JSON e integração de compilação/execução. O script testa as linguagens cujas ferramentas estão instaladas e informa quando uma dependência opcional está ausente. Execute na raiz do clone:
 
 ~~~bash
 sh tests/run.sh
 ~~~
 
-O teste requer Vim instalado. Ele não substitui testes manuais de compilação, execução e integração com os compiladores externos.
+O teste requer Vim instalado. Python 3, Node.js, GCC, G++, Rust, Go e JDK são verificados individualmente; linguagens sem a ferramenta correspondente são marcadas como ignoradas. O GitHub Actions executa a suíte em Ubuntu 22.04 e 24.04 com as ferramentas instaladas.
 
 ## Solução de problemas
 
