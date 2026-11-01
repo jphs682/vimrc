@@ -57,6 +57,12 @@ if command -v gcc >/dev/null 2>&1; then
 int main(void) { puts("c-ok"); return 0; }
 C
     run_vim_test "$TMP_DIR/dir com espaços; marcador/teste.c"
+
+    cat > "$TMP_DIR/erro.c" <<'C'
+int main(void) { this is not valid C; }
+C
+    "$VIM_BIN" -Nu "$ROOT/vimrc" --noplugin -n -es "$TMP_DIR/erro.c" -S "$ROOT/tests/check-compile-failure.vim"
+    echo "OK: falha de compilação e limpeza do diretório temporário"
 else
     echo "SKIP: gcc não instalado"
 fi
