@@ -1,5 +1,5 @@
 " =============================================================================
-" vimrc 1.1.1 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
+" vimrc 1.2.0 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
 " =============================================================================
 "
 " Objetivo:
@@ -318,45 +318,220 @@ if has('terminal')
 endif
 
 " -----------------------------------------------------------------------------
-" 20. EXECUÇÃO DE ARQUIVOS
+" 20. COMPILAÇÃO E EXECUÇÃO
 " -----------------------------------------------------------------------------
+
+" Executa comandos externos de forma uniforme e devolve o código de saída.
+function! s:RunShellCommand(command) abort
+    execute '!' . a:command
+    return v:shell_error
+endfunction
+
+function! s:RequireExecutable(binary, label) abort
+    if !executable(a:binary)
+        echoerr a:label . ' não encontrado. Instale-o e verifique se está no PATH.'
+        return 0
+    endif
+    return 1
+endfunction
+
+" Cada buffer mantém seus artefatos em um diretório temporário próprio.
+function! s:GetBuildDirectory() abort
+    if !exists('b:vim_build_dir') || empty(b:vim_build_dir)
+        let b:vim_build_dir = tempname()
+    endif
+
+    if isdirectory(b:vim_build_dir)
+        call delete(b:vim_build_dir, 'rf')
+    endif
+    call mkdir(b:vim_build_dir, 'p')
+    return b:vim_build_dir
+endfunction
+
+function! s:CleanupCurrentBuild() abort
+    if exists('b:vim_build_dir') && !empty(b:vim_build_dir)
+        if isdirectory(b:vim_build_dir)
+            call delete(b:vim_build_dir, 'rf')
+        endif
+    endif
+    unlet! b:vim_build_dir b:vim_build_output b:vim_build_class
+endfunction
+
+function! s:CleanupBufferBuild(bufnr) abort
+    let l:dir = getbufvar(a:bufnr, 'vim_build_dir', '')
+    if !empty(l:dir) && isdirectory(l:dir)
+        call delete(l:dir, 'rf')
+    endif
+    call setbufvar(a:bufnr, 'vim_build_dir', '')
+endfunction
+
+augroup native_build_cleanup
+    autocmd!
+    autocmd BufWipeout * call s:CleanupBufferBuild(str2nr(expand('<abuf>')))
+    autocmd VimLeavePre * for s:buf in getbufinfo() | call s:CleanupBufferBuild(s:buf.bufnr) | endfor
+augroup END
+
+function! CompileCurrentFile() abort
+    if empty(expand('%:p'))
+        echoerr 'Salve o arquivo antes de compilá-lo.'
+        return 1
+    endif
+
+    if &modified
+        write
+    endif
+
+    let l:file = expand('%:p')
+    let l:shell_file = shellescape(l:file)
+    let l:dir = s:GetBuildDirectory()
+    let l:output = l:dir . '/program'
+    let b:vim_build_output = l:output
+    let l:command = ''
+
+    if &filetype ==# 'c'
+        if !s:RequireExecutable('gcc', 'gcc')
+            call s:CleanupCurrentBuild()
+            return 1
+        endif
+        let l:command = 'gcc -Wall -Wextra ' . l:shell_file . ' -o ' . shellescape(l:output)
+
+    elseif &filetype ==# 'cpp'
+        if !s:RequireExecutable('g++', 'g++')
+            call s:CleanupCurrentBuild()
+            return 1
+        endif
+        let l:command = 'g++ -std=c++17 -Wall -Wextra ' . l:shell_file . ' -o ' . shellescape(l:output)
+
+    elseif &filetype ==# 'rust'
+        if !s:RequireExecutable('rustc', 'rustc')
+            call s:CleanupCurrentBuild()
+            return 1
+        endif
+        let l:command = 'rustc ' . l:shell_file . ' -o ' . shellescape(l:output)
+
+    elseif &filetype ==# 'go'
+        if !s:RequireExecutable('go', 'Go (go)')
+            call s:CleanupCurrentBuild()
+            return 1
+        endif
+        let l:command = 'go build -o ' . shellescape(l:output) . ' ' . l:shell_file
+
+    elseif &filetype ==# 'java'
+        if !s:RequireExecutable('javac', 'javac') || !s:RequireExecutable('java', 'java')
+            call s:CleanupCurrentBuild()
+            return 1
+        endif
+
+        " Compila os arquivos Java do mesmo diretório para permitir classes auxiliares.
+        let l:java_files = globpath(expand('%:p:h'), '*.java', 0, 1)
+        if empty(l:java_files)
+            let l:java_files = [l:file]
+        endif
+        let l:sources = join(map(copy(l:java_files), 'shellescape(v:val)'), ' ')
+        let l:source = join(readfile(l:file), "\n")
+        let l:package = matchstr(l:source, '\mpackage\s\+\zs[A-Za-z_][A-Za-z0-9_.]*\ze\s*;')
+        let b:vim_build_class = (empty(l:package) ? '' : l:package . '.') . expand('%:t:r')
+        let l:command = 'javac -d ' . shellescape(l:dir) . ' ' . l:sources
+
+    elseif index(['python', 'javascript', 'typescript'], &filetype) >= 0
+        echo 'Este tipo de arquivo é interpretado; use :RunCurrentFile para executá-lo.'
+        call s:CleanupCurrentBuild()
+        return 0
+
+    else
+        echoerr 'Tipo de arquivo sem comando de compilação configurado.'
+        call s:CleanupCurrentBuild()
+        return 1
+    endif
+
+    echo 'Compilando ' . expand('%:t') . '...'
+    if s:RunShellCommand(l:command) != 0
+        call s:CleanupCurrentBuild()
+        echoerr 'A compilação falhou. Consulte as mensagens do compilador acima.'
+        return 1
+    endif
+
+    echo 'Compilação concluída: ' . expand('%:t')
+    return 0
+endfunction
 
 function! RunCurrentFile() abort
     if empty(expand('%:p'))
         echoerr 'Salve o arquivo antes de executá-lo.'
-        return
+        return 1
     endif
 
-    write
+    if &modified
+        write
+    endif
+
     let l:file = shellescape(expand('%:p'))
-    let l:output = shellescape(expand('%:p:r') . '.out')
+    let l:command = ''
 
     if &filetype ==# 'python'
-        execute '!python3 ' . l:file
-    elseif &filetype ==# 'javascript'
-        execute '!node ' . l:file
-    elseif &filetype ==# 'typescript'
-        if executable('ts-node')
-            execute '!ts-node ' . l:file
-        else
-            echoerr 'ts-node não encontrado. Instale-o separadamente se desejar executar TypeScript.'
+        if !s:RequireExecutable('python3', 'Python 3')
+            return 1
         endif
-    elseif &filetype ==# 'go'
-        execute '!go run ' . l:file
-    elseif &filetype ==# 'c'
-        execute '!gcc ' . l:file . ' -Wall -Wextra -o ' . l:output . ' && ' . l:output
-    elseif &filetype ==# 'cpp'
-        execute '!g++ ' . l:file . ' -std=c++17 -Wall -Wextra -o ' . l:output . ' && ' . l:output
-    elseif &filetype ==# 'rust'
-        execute '!rustc ' . l:file . ' -o ' . l:output . ' && ' . l:output
+        let l:command = 'python3 ' . l:file
+
+    elseif &filetype ==# 'javascript'
+        if !s:RequireExecutable('node', 'Node.js (node)')
+            return 1
+        endif
+        let l:command = 'node ' . l:file
+
+    elseif &filetype ==# 'typescript'
+        if !s:RequireExecutable('ts-node', 'ts-node')
+            return 1
+        endif
+        let l:command = 'ts-node ' . l:file
+
+    elseif index(['c', 'cpp', 'rust', 'go'], &filetype) >= 0
+        if !exists('b:vim_build_output') || !filereadable(b:vim_build_output)
+            echoerr 'Programa não compilado. Execute :CompileCurrentFile primeiro.'
+            return 1
+        endif
+        let l:command = shellescape(b:vim_build_output)
+
+    elseif &filetype ==# 'java'
+        if !s:RequireExecutable('java', 'java')
+            return 1
+        endif
+        if !exists('b:vim_build_dir') || !exists('b:vim_build_class')
+            echoerr 'Classes Java não compiladas. Execute :CompileCurrentFile primeiro.'
+            return 1
+        endif
+        let l:command = 'java -cp ' . shellescape(b:vim_build_dir) . ' ' . shellescape(b:vim_build_class)
+
     else
         echoerr 'Tipo de arquivo sem comando de execução configurado.'
+        return 1
     endif
+
+    let l:status = s:RunShellCommand(l:command)
+    call s:CleanupCurrentBuild()
+    return l:status
 endfunction
 
-nnoremap <silent> <leader>r :call RunCurrentFile()<CR>
+function! BuildAndRunCurrentFile() abort
+    if index(['python', 'javascript', 'typescript'], &filetype) >= 0
+        return RunCurrentFile()
+    endif
 
-" -----------------------------------------------------------------------------
+    if CompileCurrentFile() != 0
+        return 1
+    endif
+    return RunCurrentFile()
+endfunction
+
+command! CompileCurrentFile call CompileCurrentFile()
+command! RunCurrentFile call RunCurrentFile()
+command! BuildAndRunCurrentFile call BuildAndRunCurrentFile()
+
+nnoremap <silent> <leader>c :call CompileCurrentFile()<CR>
+nnoremap <silent> <leader>R :call RunCurrentFile()<CR>
+nnoremap <silent> <leader>r :call BuildAndRunCurrentFile()<CR>
+
 " 21. GIT PELO TERMINAL
 " -----------------------------------------------------------------------------
 
