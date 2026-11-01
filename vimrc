@@ -1,5 +1,5 @@
 " =============================================================================
-" vimrc 1.2.0 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
+" vimrc 1.3.0 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
 " =============================================================================
 "
 " Objetivo:
@@ -255,6 +255,170 @@ command! HideWhitespace setlocal nolist
 command! ToggleRelativeNumber setlocal relativenumber!
 
 " -----------------------------------------------------------------------------
+" -----------------------------------------------------------------------------
+" 13.1. PRODUTIVIDADE E NAVEGAÇÃO
+" -----------------------------------------------------------------------------
+
+" Cicla entre números absolutos + relativos, absolutos e sem números.
+function! ToggleNumberMode() abort
+    if &number && &relativenumber
+        set norelativenumber
+    elseif &number
+        set nonumber norelativenumber
+    else
+        set number relativenumber
+    endif
+endfunction
+
+command! ToggleNumberMode call ToggleNumberMode()
+nnoremap <silent> <leader>n :call ToggleNumberMode()<CR>
+
+" Busca nomes de arquivos recursivamente a partir do diretório atual.
+set path+=**
+nnoremap <leader>f :find 
+
+" Pesquisa texto nos arquivos do projeto usando vimgrep nativo.
+function! ProjectSearch() abort
+    let l:pattern = input('Pesquisar no projeto: ')
+    if empty(l:pattern)
+        return
+    endif
+
+    try
+        execute 'silent vimgrep /' . escape(l:pattern, '/') . '/gj **/*'
+    catch
+        echoerr 'Falha na pesquisa: ' . v:exception
+        return
+    endtry
+
+    if empty(getqflist())
+        echo 'Nenhuma ocorrência encontrada.'
+    else
+        copen
+    endif
+endfunction
+
+command! ProjectSearch call ProjectSearch()
+nnoremap <silent> <leader>g :ProjectSearch<CR>
+
+" Alterna comentários em linguagens com prefixo de comentário por linha.
+function! ToggleCommentLines() range abort
+    let l:prefix = ''
+
+    if index(['python', 'sh', 'bash', 'zsh', 'yaml', 'ruby', 'toml', 'make'], &filetype) >= 0
+        let l:prefix = '#'
+    elseif index(['c', 'cpp', 'java', 'javascript', 'typescript', 'go', 'rust'], &filetype) >= 0
+        let l:prefix = '//'
+    elseif index(['sql', 'lua'], &filetype) >= 0
+        let l:prefix = '--'
+    elseif &filetype ==# 'vim'
+        let l:prefix = '"'
+    else
+        echoerr 'Tipo de arquivo sem prefixo de comentário configurado.'
+        return
+    endif
+
+    let l:all_commented = 1
+    for l:lnum in range(a:firstline, a:lastline)
+        let l:line = getline(l:lnum)
+        let l:indent = matchstr(l:line, '^\s*')
+        if strpart(l:line, strlen(l:indent), strlen(l:prefix)) !=# l:prefix
+            let l:all_commented = 0
+            break
+        endif
+    endfor
+
+    for l:lnum in range(a:firstline, a:lastline)
+        let l:line = getline(l:lnum)
+        let l:indent = matchstr(l:line, '^\s*')
+        let l:body = strpart(l:line, strlen(l:indent))
+
+        if l:all_commented
+            let l:body = strpart(l:body, strlen(l:prefix))
+            if strpart(l:body, 0, 1) ==# ' '
+                let l:body = strpart(l:body, 1)
+            endif
+        else
+            let l:body = l:prefix . (empty(l:body) ? '' : ' ' . l:body)
+        endif
+
+        call setline(l:lnum, l:indent . l:body)
+    endfor
+endfunction
+
+nnoremap <silent> <leader>cc :call ToggleCommentLines()<CR>
+xnoremap <silent> <leader>cc :<C-u>'<,'>call ToggleCommentLines()<CR>
+
+" Insere modelos simples somente em buffers vazios.
+function! InsertFileTemplate() abort
+    if line('$') != 1 || getline(1) !=# ''
+        echoerr 'O modelo só pode ser inserido em um buffer vazio.'
+        return
+    endif
+
+    let l:name = expand('%:t:r')
+    if empty(l:name)
+        let l:name = 'Main'
+    endif
+
+    if &filetype ==# 'java'
+        let l:template = [
+                    \ 'public class ' . l:name . ' {',
+                    \ '    public static void main(String[] args) {',
+                    \ '        ',
+                    \ '    }',
+                    \ '}'
+                    \ ]
+    elseif &filetype ==# 'c'
+        let l:template = [
+                    \ '#include <stdio.h>',
+                    \ '',
+                    \ 'int main(void) {',
+                    \ '    return 0;',
+                    \ '}'
+                    \ ]
+    elseif &filetype ==# 'cpp'
+        let l:template = [
+                    \ '#include <iostream>',
+                    \ '',
+                    \ 'int main() {',
+                    \ '    return 0;',
+                    \ '}'
+                    \ ]
+    elseif &filetype ==# 'python'
+        let l:template = [
+                    \ 'def main():',
+                    \ '    pass',
+                    \ '',
+                    \ '',
+                    \ 'if __name__ == "__main__":',
+                    \ '    main()'
+                    \ ]
+    else
+        echoerr 'Não existe modelo configurado para este tipo de arquivo.'
+        return
+    endif
+
+    call setline(1, l:template)
+    call cursor(1, 1)
+    setlocal modified
+endfunction
+
+command! InsertTemplate call InsertFileTemplate()
+nnoremap <silent> <leader>t :InsertTemplate<CR>
+
+" Exibe metadados úteis do arquivo atual.
+function! ShowFileInfo() abort
+    echo 'Arquivo: ' . (empty(expand('%:p')) ? '[sem nome]' : expand('%:p'))
+    echomsg 'Tipo: ' . (&filetype ==# '' ? '[não definido]' : &filetype)
+    echomsg 'Codificação: ' . (&fileencoding ==# '' ? &encoding : &fileencoding)
+    echomsg 'Formato: ' . &fileformat
+    echomsg 'Linhas: ' . line('$') . ' | Coluna: ' . col('.')
+    echomsg 'Estado: ' . (&modified ? 'modificado' : 'salvo')
+endfunction
+
+command! FileInfo call ShowFileInfo()
+
 " 14. BUFFERS
 " -----------------------------------------------------------------------------
 
