@@ -1,4 +1,4 @@
-# Vimrc 1.2.0 — Vim nativo, sem plugins
+# Vimrc 1.3.0 — Vim nativo, sem plugins
 
 Configuração para o **Vim tradicional**, com prioridade para Linux, usando somente recursos nativos do Vim e Vimscript.
 
@@ -12,7 +12,9 @@ O objetivo é oferecer uma configuração organizada para edição e programaç�
 - Busca incremental e diferenciação entre maiúsculas e minúsculas.
 - Indentação padrão de quatro espaços, com ajustes por tipo de arquivo.
 - Configurações específicas para Python, C, C++, Go, Rust, JavaScript, TypeScript, HTML, CSS, JSON, YAML e Markdown.
-- Navegação por buffers e janelas.
+- Navegação por buffers e janelas, busca recursiva de arquivos e pesquisa textual nativa no projeto.
+- Alternância de numeração, comentários por seleção e modelos básicos de Java, C, C++ e Python.
+- Informações detalhadas do arquivo atual.
 - Terminal integrado nativo, quando disponível na compilação do Vim.
 - Execução e compilação separadas por comandos nativos; o atalho ,r compila e executa quando necessário.
 - Artefatos compilados isolados em diretórios temporários por buffer, com limpeza ao executar, fechar o buffer ou sair normalmente do Vim.
@@ -96,6 +98,11 @@ A tecla líder (Leader) é a vírgula. Por isso, Leader+w significa pressionar v
 | ,bd | Fechar buffer |
 | ,bl | Listar buffers |
 | ,ls | Listar buffers |
+| ,f | Localizar arquivo recursivamente com :find |
+| ,g | Pesquisar texto nos arquivos do projeto |
+| ,n | Alternar numeração relativa/absoluta/desativada |
+| ,cc | Alternar comentário da linha ou seleção |
+| ,t | Inserir modelo para Java, C, C++ ou Python |
 
 ### Janelas
 
@@ -112,6 +119,8 @@ A tecla líder (Leader) é a vírgula. Por isso, Leader+w significa pressionar v
 | Atalho | Ação |
 |---|---|
 | ,nh | Limpar destaque da busca |
+| ,cc | Comentar/descomentar linha ou seleção (conforme o tipo de arquivo) |
+| ,t | Inserir modelo inicial em buffer vazio |
 | j / k | Navegar por linhas visuais quando há quebra de linha |
 | > / < no modo Visual | Indentar seleção mantendo-a selecionada |
 | J / K no modo Visual | Mover linhas selecionadas para baixo/cima |
@@ -147,6 +156,10 @@ Os atalhos Git funcionam dentro de um repositório, inclusive em seus subdiretó
 | :HideWhitespace | Ocultar caracteres especiais |
 | :ToggleRelativeNumber | Alternar números relativos |
 | :VimInfo | Exibir informações da versão do Vim |
+| :ToggleNumberMode | Ciclar entre números relativos, absolutos e ocultos |
+| :ProjectSearch | Pesquisar texto nos arquivos sob o diretório atual |
+| :InsertTemplate | Inserir modelo conforme o tipo do arquivo |
+| :FileInfo | Exibir informações do arquivo atual |
 
 A formatação valida o JSON antes de alterar o buffer. Se o JSON for inválido, o Python 3 não estiver disponível ou o formatador falhar, a configuração informa o erro e preserva o conteúdo original.
 
@@ -187,6 +200,16 @@ Salve o arquivo e pressione ,r para o fluxo habitual de compilar e executar.
 ### Arquivos compilados
 
 Os executáveis de C, C++, Rust e Go e as classes Java são criados em diretórios temporários separados por buffer. A configuração remove esses diretórios depois da execução, ao fechar o buffer ou ao sair normalmente do Vim. Se o processo do Vim for encerrado à força (por exemplo, com kill -9 ou queda de energia), o sistema pode manter resíduos temporários.
+
+### Navegação e pesquisa no projeto
+
+O atalho ,f inicia :find e permite localizar arquivos usando o caminho recursivo configurado em 'path'. O atalho ,g solicita um padrão e usa o vimgrep nativo para preencher a quickfix list. A pesquisa começa no diretório de trabalho atual; arquivos ignorados pela opção 'wildignore' são excluídos.
+
+### Comentários e modelos
+
+O atalho ,cc alterna comentários em linhas selecionadas para Python, shell, YAML, Ruby, TOML, Make, C, C++, Java, JavaScript, TypeScript, Go, Rust, SQL, Lua e Vimscript. A operação usa prefixos de comentário por linha; sintaxes especiais como HTML e CSS não são incluídas.
+
+O atalho ,t insere um modelo básico para Java, C, C++ ou Python, apenas se o buffer estiver vazio. No Java, o nome da classe é derivado do nome do arquivo; renomeie o arquivo para manter a convenção de nomes.
 
 ## Personalização
 
