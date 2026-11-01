@@ -8,6 +8,8 @@ endif
 
 let s:required_commands = [
             \ 'FormatJSON',
+            \ 'ShowWhitespace',
+            \ 'HideWhitespace',
             \ 'CompileCurrentFile',
             \ 'RunCurrentFile',
             \ 'BuildAndRunCurrentFile',
@@ -52,6 +54,13 @@ call InsertFileTemplate()
 call assert_equal('public class ModeloTeste {', getline(1))
 call assert_equal('}', getline('$'))
 
+" Comandos de espaços devem ter semântica explícita.
+setlocal nolist
+ShowWhitespace
+call assert_true(&l:list)
+HideWhitespace
+call assert_false(&l:list)
+
 if executable('python3')
     " Formatação JSON válida.
     enew!
@@ -73,21 +82,6 @@ if executable('python3')
 else
     echomsg 'SKIP: testes de JSON exigem Python 3'
 endif
-setlocal filetype=json
-call setline(1, ['{"nome":"Ana","nota":10}'])
-call FormatCurrentJSON()
-call assert_equal('{', getline(1))
-call assert_match('"nome": "Ana"', getline(2))
-call assert_match('"nota": 10', getline(3))
-call assert_equal('}', getline(4))
-
-" JSON inválido deve preservar o buffer original.
-enew!
-setlocal filetype=json
-call setline(1, ['{"nome": }'])
-let s:invalid_json_before = getline(1, '$')
-silent! call FormatCurrentJSON()
-call assert_equal(s:invalid_json_before, getline(1, '$'))
 
 if !empty(v:errors)
     for s:error in v:errors
