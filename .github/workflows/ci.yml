@@ -1,0 +1,35 @@
+name: Vimrc CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Testes no Ubuntu ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Vim e ferramentas de compilação
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y vim-nox python3 gcc g++ default-jdk golang-go rustc nodejs
+
+      - name: Validar sintaxe do shell
+        run: sh -n tests/run.sh
+
+      - name: Executar testes automatizados
+        run: sh tests/run.sh
