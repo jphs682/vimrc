@@ -1,5 +1,5 @@
 " =============================================================================
-" vimrc 1.4.0 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
+" vimrc 2.0.0 — CONFIGURAÇÃO NATIVA, SEM PLUGINS
 " =============================================================================
 "
 " Objetivo:
@@ -250,11 +250,10 @@ function! FormatCurrentJSON() abort
 endfunction
 
 command! FormatJSON call FormatCurrentJSON()
-command! ShowWhitespace setlocal list!
+command! ShowWhitespace setlocal list
 command! HideWhitespace setlocal nolist
 command! ToggleRelativeNumber setlocal relativenumber!
 
-" -----------------------------------------------------------------------------
 " -----------------------------------------------------------------------------
 " 13.1. PRODUTIVIDADE E NAVEGAÇÃO
 " -----------------------------------------------------------------------------
@@ -362,6 +361,10 @@ function! InsertFileTemplate() abort
     endif
 
     if &filetype ==# 'java'
+        if l:name !~# '^[A-Za-z_$][A-Za-z0-9_$]*$'
+            echoerr 'Nome de arquivo inválido para uma classe Java. Renomeie-o antes de inserir o modelo.'
+            return
+        endif
         let l:template = [
                     \ 'public class ' . l:name . ' {',
                     \ '    public static void main(String[] args) {',
@@ -501,15 +504,22 @@ endfunction
 
 " Cada buffer mantém seus artefatos em um diretório temporário próprio.
 function! s:GetBuildDirectory() abort
-    if !exists('b:vim_build_dir') || empty(b:vim_build_dir)
-        let b:vim_build_dir = tempname()
+    " Remove apenas o diretório previamente criado por esta configuração.
+    if exists('b:vim_build_dir') && !empty(b:vim_build_dir)
+        call s:CleanupCurrentBuild()
     endif
 
-    if isdirectory(b:vim_build_dir)
-        call delete(b:vim_build_dir, 'rf')
+    let l:dir = tempname()
+
+    " mkdir sem modo recursivo: nunca apaga nem reutiliza um caminho existente.
+    " No Linux, 0700 restringe o acesso aos arquivos compilados ao usuário.
+    if mkdir(l:dir, '', 0700) != 1
+        echoerr 'Não foi possível criar um diretório temporário seguro.'
+        return ''
     endif
-    call mkdir(b:vim_build_dir, 'p')
-    return b:vim_build_dir
+
+    let b:vim_build_dir = l:dir
+    return l:dir
 endfunction
 
 function! s:CleanupCurrentBuild() abort
@@ -545,9 +555,17 @@ function! CompileCurrentFile() abort
         write
     endif
 
+    if index(['python', 'javascript', 'typescript'], &filetype) >= 0
+        echo 'Este tipo de arquivo é interpretado; use :RunCurrentFile para executá-lo.'
+        return 0
+    endif
+
     let l:file = expand('%:p')
     let l:shell_file = shellescape(l:file)
     let l:dir = s:GetBuildDirectory()
+    if empty(l:dir)
+        return 1
+    endif
     let l:output = l:dir . '/program'
     let b:vim_build_output = l:output
     let l:command = ''
@@ -587,20 +605,27 @@ function! CompileCurrentFile() abort
         endif
 
         " Compila os arquivos Java do mesmo diretório para permitir classes auxiliares.
+        let l:class = expand('%:t:r')
+        if l:class !~# '^[A-Za-z_$][A-Za-z0-9_$]*$'
+            call s:CleanupCurrentBuild()
+            echoerr 'Nome de arquivo inválido para uma classe Java: use um identificador Java válido.'
+            return 1
+        endif
+
+        " Remove comentários antes de procurar a declaração package.
+        " Isso permite comentários de cabeçalho sem confundir o nome do pacote.
+        let l:source = join(readfile(l:file), "\n")
+        let l:source = substitute(l:source, '/\*\_.\{-}\*/', '', 'g')
+        let l:source = substitute(l:source, '//[^\n]*', '', 'g')
+        let l:package = matchstr(l:source, '\m\%(^\|\n\)\s*package\s\+\zs[A-Za-z_$][A-Za-z0-9_$]*\%([.][A-Za-z_$][A-Za-z0-9_$]*\)*\ze\s*;')
+
         let l:java_files = globpath(expand('%:p:h'), '*.java', 0, 1)
         if empty(l:java_files)
             let l:java_files = [l:file]
         endif
         let l:sources = join(map(copy(l:java_files), 'shellescape(v:val)'), ' ')
-        let l:source = join(readfile(l:file), "\n")
-        let l:package = matchstr(l:source, '\mpackage\s\+\zs[A-Za-z_][A-Za-z0-9_.]*\ze\s*;')
-        let b:vim_build_class = (empty(l:package) ? '' : l:package . '.') . expand('%:t:r')
+        let b:vim_build_class = (empty(l:package) ? '' : l:package . '.') . l:class
         let l:command = 'javac -d ' . shellescape(l:dir) . ' ' . l:sources
-
-    elseif index(['python', 'javascript', 'typescript'], &filetype) >= 0
-        echo 'Este tipo de arquivo é interpretado; use :RunCurrentFile para executá-lo.'
-        call s:CleanupCurrentBuild()
-        return 0
 
     else
         echoerr 'Tipo de arquivo sem comando de compilação configurado.'
@@ -699,10 +724,26 @@ nnoremap <silent> <leader>r :call BuildAndRunCurrentFile()<CR>
 " 21. GIT PELO TERMINAL
 " -----------------------------------------------------------------------------
 
-" Estes atalhos usam o executável git do sistema, não plugins do Vim.
-nnoremap <leader>gs :!git status<CR>
-nnoremap <leader>gl :!git log --oneline --decorate -10<CR>
-nnoremap <leader>gd :!git diff<CR>
+" Verifica a disponibilidade do Git e se o diretório atual pertence a um repositório.
+function! s:GitCommand(arguments) abort
+    if !executable('git')
+        echoerr 'Git não encontrado. Instale o Git e verifique se está no PATH.'
+        return
+    endif
+
+    call system('git rev-parse --show-toplevel')
+    if v:shell_error != 0
+        echoerr 'O diretório atual não pertence a um repositório Git.'
+        return
+    endif
+
+    " Os argumentos abaixo são constantes definidos pelos mapeamentos locais.
+    execute '!git ' . a:arguments
+endfunction
+
+nnoremap <silent> <leader>gs :call <SID>GitCommand('status --short --branch')<CR>
+nnoremap <silent> <leader>gl :call <SID>GitCommand('log --oneline --decorate -10')<CR>
+nnoremap <silent> <leader>gd :call <SID>GitCommand('diff')<CR>
 
 " -----------------------------------------------------------------------------
 " 22. INFORMAÇÕES

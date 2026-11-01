@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   test:
-    name: Testes no Ubuntu ${{ matrix.os }}
+    name: Testes no Ubuntu ${{ matrix.os }} (Vim 8.2+)
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -22,14 +22,29 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Instalar Vim e ferramentas de compilação
         run: |
           sudo apt-get update
-          sudo apt-get install -y vim-nox python3 gcc g++ default-jdk golang-go rustc nodejs ts-node
+          sudo apt-get install -y vim-nox python3 gcc g++ default-jdk golang-go rustc nodejs
+
+      - name: Conferir versão mínima do Vim
+        run: |
+          vim --version | head -n 2
+          vim -Nu ./vimrc --noplugin -n -es -c 'if v:version < 802 | cquit | endif' -c 'qa!'
 
       - name: Validar sintaxe do shell
         run: sh -n tests/run.sh
+
+      - name: Verificar whitespace das alterações
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git diff --check "origin/$GITHUB_BASE_REF...HEAD"
+          else
+            git diff --check "HEAD^ HEAD"
+          fi
 
       - name: Executar testes automatizados
         run: sh tests/run.sh
