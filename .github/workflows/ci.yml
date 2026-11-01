@@ -26,7 +26,7 @@ jobs:
       - name: Instalar Vim e ferramentas de compilação
         run: |
           sudo apt-get update
-          sudo apt-get install -y vim-nox python3 gcc g++ default-jdk golang-go rustc nodejs
+          sudo apt-get install -y vim-nox python3 gcc g++ default-jdk golang-go rustc nodejs ts-node
 
       - name: Validar sintaxe do shell
         run: sh -n tests/run.sh
