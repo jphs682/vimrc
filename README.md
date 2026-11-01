@@ -1,4 +1,4 @@
-# Vimrc 1.1 — Vim nativo, sem plugins
+# Vimrc 1.1.1 — Vim nativo, sem plugins
 
 Configuração para o **Vim tradicional**, com prioridade para Linux, usando somente recursos nativos do Vim e Vimscript.
 
@@ -144,7 +144,7 @@ Os atalhos Git funcionam dentro de um repositório, inclusive em seus subdiretó
 | :ToggleRelativeNumber | Alternar números relativos |
 | :VimInfo | Exibir informações da versão do Vim |
 
-Se o JSON for inválido, a formatação informa o erro e preserva o conteúdo original.
+A formatação valida o JSON antes de alterar o buffer. Se o JSON for inválido, o Python 3 não estiver disponível ou o formatador falhar, a configuração informa o erro e preserva o conteúdo original.
 
 ## Execução de linguagens
 
@@ -183,7 +183,13 @@ O arquivo usa recursos nativos do Vim. Não é necessário instalar plugin manag
 
 ### A configuração apresenta erro ao carregar
 
-Abra o Vim e execute:
+A partir da raiz do repositório, faça uma verificação não interativa da configuração:
+
+~~~bash
+vim -Nu ./vimrc -n -es -c 'qall!'
+~~~
+
+Depois, abra o Vim e execute:
 
 ~~~vim
 :source ~/.vimrc
