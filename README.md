@@ -217,6 +217,16 @@ Edite ~/.vimrc para ajustar opções, atalhos e regras de indentação. As confi
 
 O arquivo usa recursos nativos do Vim. Não é necessário instalar plugin manager, executar :PlugInstall ou configurar servidores LSP.
 
+## Testes básicos
+
+O repositório inclui um teste de carregamento e verificações de comandos e recursos principais. Execute na raiz do clone:
+
+~~~bash
+sh tests/run.sh
+~~~
+
+O teste requer Vim instalado. Ele não substitui testes manuais de compilação, execução e integração com os compiladores externos.
+
 ## Solução de problemas
 
 ### A configuração apresenta erro ao carregar
