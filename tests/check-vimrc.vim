@@ -1,4 +1,4 @@
-" Testes básicos da configuração vimrc 1.3.0.
+" Testes funcionais da configuração vimrc 1.4.0.
 set nomore
 
 let s:required_commands = [
@@ -20,6 +20,7 @@ call assert_equal(1, exists('*ToggleCommentLines'))
 call assert_equal(1, exists('*InsertFileTemplate'))
 call assert_equal(1, exists('*ShowFileInfo'))
 
+" Alternância dos três modos de numeração.
 set number relativenumber
 call ToggleNumberMode()
 call assert_true(&number && !&relativenumber)
@@ -28,21 +29,40 @@ call assert_false(&number || &relativenumber)
 call ToggleNumberMode()
 call assert_true(&number && &relativenumber)
 
+" Comentários: comentar e descomentar sem perder indentação.
 enew!
 setlocal filetype=python
-call setline(1, 'print("teste")')
+call setline(1, '    print("teste")')
 1,1call ToggleCommentLines()
-call assert_equal('# print("teste")', getline(1))
+call assert_equal('    # print("teste")', getline(1))
 1,1call ToggleCommentLines()
-call assert_equal('print("teste")', getline(1))
+call assert_equal('    print("teste")', getline(1))
 
+" Modelo Java com nome derivado do arquivo.
 enew!
-filetype on
+execute 'file ' . fnameescape('/tmp/ModeloTeste.java')
 setlocal filetype=java
-file /tmp/ModeloTeste.java
 call InsertFileTemplate()
 call assert_equal('public class ModeloTeste {', getline(1))
 call assert_equal('}', getline('$'))
+
+" Formatação JSON válida.
+enew!
+setlocal filetype=json
+call setline(1, ['{"nome":"Ana","nota":10}'])
+call FormatCurrentJSON()
+call assert_equal('{', getline(1))
+call assert_match('"nome": "Ana"', getline(2))
+call assert_match('"nota": 10', getline(3))
+call assert_equal('}', getline(4))
+
+" JSON inválido deve preservar o buffer original.
+enew!
+setlocal filetype=json
+call setline(1, ['{"nome": }'])
+let s:invalid_json_before = getline(1, '$')
+silent! call FormatCurrentJSON()
+call assert_equal(s:invalid_json_before, getline(1, '$'))
 
 if !empty(v:errors)
     for s:error in v:errors
