@@ -40,7 +40,7 @@ else
     echo "SKIP: node não instalado"
 fi
 
-if command -v ts-node >/dev/null 2>&1; then
+if command -v ts-node >/dev/null 2>&1 && ts-node --version >/dev/null 2>&1; then
     cat > "$TMP_DIR/teste.ts" <<'TS'
 const message: string = "typescript-ok";
 console.log(message);
@@ -51,11 +51,12 @@ else
 fi
 
 if command -v gcc >/dev/null 2>&1; then
-    cat > "$TMP_DIR/teste.c" <<'C'
+    mkdir -p "$TMP_DIR/dir com espaços; marcador"
+    cat > "$TMP_DIR/dir com espaços; marcador/teste.c" <<'C'
 #include <stdio.h>
 int main(void) { puts("c-ok"); return 0; }
 C
-    run_vim_test "$TMP_DIR/teste.c"
+    run_vim_test "$TMP_DIR/dir com espaços; marcador/teste.c"
 else
     echo "SKIP: gcc não instalado"
 fi
@@ -93,11 +94,21 @@ fi
 if command -v javac >/dev/null 2>&1 && command -v java >/dev/null 2>&1; then
     mkdir -p "$TMP_DIR/java"
     cat > "$TMP_DIR/java/Main.java" <<'JAVA'
+/*
+ * Cabeçalho de exemplo.
+ * package comentario.invalido;
+ */
 package demo;
 public class Main {
     public static void main(String[] args) {
-        System.out.println("java-ok");
+        System.out.println(Helper.message());
     }
+}
+JAVA
+    cat > "$TMP_DIR/java/Helper.java" <<'JAVA'
+package demo;
+public class Helper {
+    public static String message() { return "java-ok"; }
 }
 JAVA
     run_vim_test "$TMP_DIR/java/Main.java"
