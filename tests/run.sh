@@ -40,6 +40,16 @@ else
     echo "SKIP: node não instalado"
 fi
 
+if command -v ts-node >/dev/null 2>&1; then
+    cat > "$TMP_DIR/teste.ts" <<'TS'
+const message: string = "typescript-ok";
+console.log(message);
+TS
+    run_vim_test "$TMP_DIR/teste.ts"
+else
+    echo "SKIP: ts-node não instalado"
+fi
+
 if command -v gcc >/dev/null 2>&1; then
     cat > "$TMP_DIR/teste.c" <<'C'
 #include <stdio.h>
