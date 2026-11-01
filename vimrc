@@ -285,7 +285,7 @@ function! ProjectSearch() abort
     endif
 
     try
-        execute 'silent vimgrep /' . escape(l:pattern, '/') . '/gj **/*'
+        execute 'silent vimgrep /' . escape(l:pattern, '/\\|') . '/gj **/*'
     catch
         echoerr 'Falha na pesquisa: ' . v:exception
         return
